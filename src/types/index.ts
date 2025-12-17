@@ -53,7 +53,7 @@ export interface OrderItem {
     text?: string;
     images?: string[];
     colors?: string[];
-    design?: any;
+    design?: Record<string, unknown>;
   };
   unitPrice: number;
   totalPrice: number;

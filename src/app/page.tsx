@@ -155,7 +155,7 @@ export default function HomePage() {
                   ))}
                 </div>
                 <p className="text-gray-300 mb-4">
-                  "Service exceptionnel, qualité irréprochable. Je recommande vivement !"
+                  &quot;Service exceptionnel, qualité irréprochable. Je recommande vivement !&quot;
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-blue-500" />

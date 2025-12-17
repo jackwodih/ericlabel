@@ -10,7 +10,7 @@ export interface CartItem {
   unitPrice: number;
   totalPrice: number;
   customization?: {
-    design: any;
+    design: Record<string, unknown>;
     preview: string;
     text?: string;
     images?: string[];

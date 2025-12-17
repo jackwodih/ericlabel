@@ -165,7 +165,7 @@ export default function TestPage() {
               ✅ Tous les composants fonctionnent !
             </h3>
             <p className="text-gray-600">
-              Vous pouvez maintenant construire l'application complète
+              Vous pouvez maintenant construire l&apos;application complète
             </p>
           </div>
         </Card>

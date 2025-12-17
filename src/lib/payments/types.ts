@@ -9,7 +9,7 @@ export interface PaymentRequest {
   returnUrl: string;
   cancelUrl: string;
   webhookUrl: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface PaymentResponse {
@@ -26,7 +26,7 @@ export interface PaymentStatus {
   amount: number;
   currency: string;
   provider: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 export type PaymentProvider = 
