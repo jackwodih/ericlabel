@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { CldUploadWidget } from 'next-cloudinary';
-import { ImageIcon, X, UploadCloud } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { ImageIcon, X } from 'lucide-react';
+import Image from 'next/image';
 
 interface LogoUploadProps {
   onUpload: (url: string) => void;
@@ -24,10 +24,11 @@ export function LogoUpload({
     <div className="space-y-4">
       {value ? (
         <div className="relative w-32 h-32 rounded-lg border border-white/10 bg-white/5 overflow-hidden group">
-          <img 
+          <Image 
             src={value} 
             alt="Logo" 
-            className="w-full h-full object-contain p-2"
+            fill
+            className="object-contain p-2"
           />
           <button
             type="button"
@@ -40,9 +41,10 @@ export function LogoUpload({
       ) : (
         <CldUploadWidget 
           uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'label_designs'}
-          onSuccess={(results: any) => {
-            if (results.info && results.info.secure_url) {
-              onUpload(results.info.secure_url);
+          onSuccess={(results) => {
+            const info = results.info as any; // Still cast but avoid any in signature
+            if (info && info.secure_url) {
+              onUpload(info.secure_url);
             }
           }}
           options={{

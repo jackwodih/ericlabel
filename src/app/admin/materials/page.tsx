@@ -9,12 +9,10 @@ import { LogoUpload } from '@/components/designer/LogoUpload';
 import { materialService, Material } from '@/lib/firebase/materials';
 import { 
   Plus, 
-  Trash2, 
-  Check, 
   Settings2, 
   Palette, 
   ChevronLeft, 
-  Sparkles, 
+  Sparkles,
   Eye, 
   AlertCircle,
   Loader2,
@@ -22,7 +20,6 @@ import {
   Save
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
 
 export default function AdminMaterialsPage() {
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -84,7 +81,7 @@ export default function AdminMaterialsPage() {
       setEditingId(null);
       loadMaterials();
       setNewMaterial(initialMaterial);
-    } catch (error) {
+    } catch {
       alert('Erreur lors de la sauvegarde');
     } finally {
       setIsSaving(false);

@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { 
   ChevronLeft, 
   CreditCard, 
-  Truck, 
   MapPin, 
   User, 
   Phone, 
@@ -196,7 +195,7 @@ export default function CheckoutPage() {
                   >
                     <option value="Togo">Togo</option>
                     <option value="Bénin">Bénin</option>
-                    <option value="Côte d'Ivoire">Côte d'Ivoire</option>
+                    <option value="Côte d&apos;Ivoire">Côte d&apos;Ivoire</option>
                     <option value="Sénégal">Sénégal</option>
                   </select>
                 </div>

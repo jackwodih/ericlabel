@@ -1,7 +1,5 @@
 import React from 'react';
 import { LabelDesigner } from '@/components/designer/LabelDesigner';
-import { Sparkles, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
 
 export default function DesignerPage() {

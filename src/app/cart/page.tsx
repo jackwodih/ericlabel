@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   ShoppingBag, 
   Trash2, 
@@ -16,14 +17,14 @@ import {
   Sparkles,
   Maximize2
 } from 'lucide-react';
-import { useCartStore, CartItem } from '@/store/cartStore';
+import { useCartStore } from '@/store/cartStore';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar } from '@/components/layout/Navbar';
 
 export default function CartPage() {
-  const { items, total, addItem, removeItem, updateQuantity, itemCount } = useCartStore();
+  const { items, total, removeItem, updateQuantity, itemCount } = useCartStore();
 
   const handleUpdateQuantity = (itemId: string, newQty: number) => {
     updateQuantity(itemId, newQty);
@@ -79,11 +80,14 @@ export default function CartPage() {
                           {item.customization?.text || 'DESIGN'}
                         </div>
                         {item.customization?.images?.[0] && (
-                           <img 
-                            src={item.customization.images[0]} 
-                            alt="Logo" 
-                            className="absolute z-10 w-1/2 h-1/2 object-contain mix-blend-multiply opacity-80" 
-                          />
+                          <div className="absolute z-10 w-1/2 h-1/2">
+                            <Image 
+                              src={item.customization.images[0]} 
+                              alt="Logo" 
+                              fill
+                              className="object-contain mix-blend-multiply opacity-80" 
+                            />
+                          </div>
                         )}
                       </div>
 
@@ -203,7 +207,7 @@ export default function CartPage() {
             </div>
             <h2 className="text-3xl font-bold mb-4">Votre panier est vide</h2>
             <p className="text-gray-400 max-w-md mb-8">
-              Il est temps d'apporter du prestige à votre marque. <br />
+              Il est temps d&apos;apporter du prestige à votre marque. <br />
               Commencez à configurer vos étiquettes personnalisées.
             </p>
             <Link href="/designer">

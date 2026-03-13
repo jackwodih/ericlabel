@@ -10,15 +10,14 @@ import {
   Type, 
   Palette, 
   Layers, 
-  Save, 
   ShoppingCart, 
   ChevronRight, 
-  Image as ImageIcon,
   Info,
   Check,
   UploadCloud,
   Loader2
 } from 'lucide-react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
@@ -177,7 +176,14 @@ export function LabelDesigner() {
               )}
               
                 {logoUrl && (
-                  <img src={logoUrl} alt="Logo preview" className="absolute left-4 w-12 h-12 object-contain mix-blend-multiply opacity-80" />
+                  <div className="absolute left-4 w-12 h-12">
+                    <Image 
+                      src={logoUrl} 
+                      alt="Logo preview" 
+                      fill 
+                      className="object-contain mix-blend-multiply opacity-80" 
+                    />
+                  </div>
                 )}
                 <span 
                   className={`relative z-10 font-bold tracking-widest text-center ${fontFamily}`}

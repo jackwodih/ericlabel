@@ -4,7 +4,6 @@ import {
   getDocs, 
   doc, 
   updateDoc, 
-  deleteDoc, 
   query, 
   where 
 } from 'firebase/firestore';
@@ -21,7 +20,7 @@ export interface Material {
   color2: string; // Pour le dégradé fallback
   techniques: string[];
   active: boolean;
-  createdAt?: any;
+  createdAt?: Date;
 }
 
 const COLLECTION_NAME = 'materials';

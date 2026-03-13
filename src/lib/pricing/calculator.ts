@@ -72,7 +72,8 @@ export const calculatePrice = (input: PricingInput, providedRule?: PricingRule):
 
   // OptionPrices might be undefined in dynamic materials from Firebase
   if (input.options.finish && rule.optionPrices?.finishes) {
-    const extra = (rule.optionPrices.finishes as any)[input.options.finish] || 0;
+    const finishes = rule.optionPrices.finishes as Record<string, number>;
+    const extra = finishes[input.options.finish] || 0;
     if (extra > 0) {
       optionsPrice += extra;
       breakdown.push({ label: `Finition: ${input.options.finish}`, amount: extra });
@@ -80,7 +81,8 @@ export const calculatePrice = (input: PricingInput, providedRule?: PricingRule):
   }
 
   if (input.options.technique && rule.optionPrices?.techniques) {
-    const extra = (rule.optionPrices.techniques as any)[input.options.technique] || 0;
+    const techniques = rule.optionPrices.techniques as Record<string, number>;
+    const extra = techniques[input.options.technique] || 0;
     if (extra > 0) {
       optionsPrice += extra;
       breakdown.push({ label: `Technique: ${input.options.technique}`, amount: extra });
