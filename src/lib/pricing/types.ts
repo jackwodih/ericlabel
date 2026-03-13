@@ -1,5 +1,5 @@
 export interface PricingInput {
-  material: 'similicuir' | 'satin' | 'tisse' | 'metal' | 'acrylique';
+  material: string;
   width: number;
   height: number;
   quantity: number;

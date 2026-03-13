@@ -1,9 +1,29 @@
 'use client';
 
-import React from 'react';
-import { Sparkles, Zap, Truck, CreditCard, Star } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Sparkles, Zap, Truck, CreditCard, Star, Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import { Navbar } from '@/components/layout/Navbar';
+import { materialService, Material } from '@/lib/firebase/materials';
 
 export default function HomePage() {
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await materialService.getAll();
+        setMaterials(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
   const features = [
     {
       icon: <Sparkles className="w-8 h-8" />,
@@ -31,17 +51,10 @@ export default function HomePage() {
     },
   ];
 
-  const materials = [
-    { name: "Similicuir", gradient: "from-amber-500 to-orange-600" },
-    { name: "Satin", gradient: "from-pink-500 to-rose-600" },
-    { name: "Tissé", gradient: "from-blue-500 to-cyan-600" },
-    { name: "Métal", gradient: "from-gray-500 to-slate-600" },
-    { name: "Acrylique", gradient: "from-purple-500 to-indigo-600" },
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4">
+      <Navbar />
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 pt-20">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl animate-pulse" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" 
@@ -57,9 +70,11 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition shadow-lg hover:shadow-xl transform hover:scale-105">
-              Commencer la création
-            </button>
+            <Link href="/designer">
+              <button className="px-8 py-4 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition shadow-lg hover:shadow-xl transform hover:scale-105 w-full sm:w-auto">
+                Commencer la création
+              </button>
+            </Link>
             <button className="px-8 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white rounded-lg font-semibold hover:bg-white/20 transition">
               Voir le catalogue
             </button>
@@ -90,21 +105,49 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {materials.map((material, index) => (
-              <div
-                key={index}
-                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-0 overflow-hidden cursor-pointer transform hover:scale-105 transition group"
-              >
-                <div className={`h-32 bg-gradient-to-br ${material.gradient} relative`}>
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition" />
-                </div>
-                <div className="p-4">
-                  <h3 className="text-white font-semibold text-center">
-                    {material.name}
-                  </h3>
-                </div>
+            {loading ? (
+              <div className="col-span-full flex flex-col items-center py-20 opacity-50">
+                <Loader2 className="w-10 h-10 animate-spin mb-4 text-orange-500" />
+                <p className="text-white">Chargement du catalogue...</p>
               </div>
-            ))}
+            ) : materials.length === 0 ? (
+               <div className="col-span-full text-center py-20 opacity-50">
+                <p className="text-white italic">Aucun matériau configuré pour le moment.</p>
+              </div>
+            ) : (
+              materials.map((material, index) => (
+                <Link 
+                  key={index}
+                  href={`/designer?material=${material.name.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-0 overflow-hidden cursor-pointer transform hover:scale-105 transition-all duration-300 group shadow-lg hover:shadow-orange-500/20"
+                >
+                  <div 
+                    className="h-32 relative overflow-hidden"
+                    style={{ background: `linear-gradient(to bottom right, ${material.color1}, ${material.color2})` }}
+                  >
+                    {material.textureUrl && (
+                      <div 
+                        className="absolute inset-0 opacity-40 mix-blend-overlay"
+                        style={{ 
+                          backgroundImage: `url(${material.textureUrl})`,
+                          backgroundSize: 'cover'
+                        }}
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all duration-500 flex items-center justify-center">
+                       <span className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] text-white opacity-0 group-hover:opacity-100 transition-opacity font-bold tracking-widest uppercase">
+                         Personnaliser
+                       </span>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-slate-900/40">
+                    <h3 className="text-white font-bold text-center group-hover:text-orange-400 transition-colors">
+                      {material.name}
+                    </h3>
+                  </div>
+                </Link>
+              ))
+            )}
           </div>
         </div>
       </section>

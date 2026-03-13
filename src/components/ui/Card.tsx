@@ -20,7 +20,7 @@ export function Card({
       className={clsx(
         'rounded-xl p-6',
         glass 
-          ? 'bg-white/70 backdrop-blur-md border border-white/20 shadow-xl'
+          ? 'bg-slate-900/40 backdrop-blur-xl border border-white/10 shadow-2xl'
           : 'bg-white border border-gray-200 shadow-lg',
         hover && 'transition-all duration-300 hover:shadow-xl hover:-translate-y-1',
         className
