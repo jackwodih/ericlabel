@@ -112,30 +112,45 @@ export function LabelDesigner() {
       };
 
       // Save to Firebase (nothing hardcoded, uses db config)
-      const docRef = await addDoc(collection(db, 'designs'), designData);
-
-      addItem({
-        id: `label-${docRef.id}`,
-        productId: `prod-${config.material}`,
-        name: `Étiquette ${config.material}`,
-        material: config.material,
-        quantity: config.quantity,
-        unitPrice: pricing.total / config.quantity,
-        totalPrice: pricing.total,
-        customization: {
-          text,
-          colors: [color],
-          images: logoUrl ? [logoUrl] : [],
-          design: { ...config, text, color, logoUrl, firebaseId: docRef.id },
-          preview: '', // Placeholder for now
-        },
-        options: {
-          width: config.width,
-          height: config.height,
-          finish: config.options.finish,
-          technique: config.options.technique,
-        }
-      });
+      if (db) {
+        const docRef = await addDoc(collection(db, 'designs'), designData);
+        addItem({
+          id: `label-${docRef.id}`,
+          productId: `prod-${config.material}`,
+          name: `Étiquette ${config.material}`,
+          material: config.material,
+          quantity: config.quantity,
+          unitPrice: pricing.total / config.quantity,
+          totalPrice: pricing.total,
+          customization: {
+            text,
+            colors: [color],
+            images: logoUrl ? [logoUrl] : [],
+            design: { ...config, text, color, logoUrl, firebaseId: docRef.id },
+            preview: '', // Placeholder for now
+          },
+          options: config.options
+        });
+      } else {
+        // Local only add if db is missing (should not happen in browser)
+        addItem({
+          id: `label-temp-${Date.now()}`,
+          productId: `prod-${config.material}`,
+          name: `Étiquette ${config.material}`,
+          material: config.material,
+          quantity: config.quantity,
+          unitPrice: pricing.total / config.quantity,
+          totalPrice: pricing.total,
+          customization: {
+            text,
+            colors: [color],
+            images: logoUrl ? [logoUrl] : [],
+            design: { ...config, text, color, logoUrl },
+            preview: '', 
+          },
+          options: config.options
+        });
+      }
       setShowSuccess(true);
       // alert('Ajouté au panier ! Votre design est maintenant sécurisé.');
     } catch (error) {
