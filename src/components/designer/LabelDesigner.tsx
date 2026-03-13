@@ -129,7 +129,11 @@ export function LabelDesigner() {
             design: { ...config, text, color, logoUrl, firebaseId: docRef.id },
             preview: '', // Placeholder for now
           },
-          options: config.options
+          options: {
+            ...config.options,
+            width: config.width,
+            height: config.height
+          }
         });
       } else {
         // Local only add if db is missing (should not happen in browser)
@@ -148,7 +152,11 @@ export function LabelDesigner() {
             design: { ...config, text, color, logoUrl },
             preview: '', 
           },
-          options: config.options
+          options: {
+            ...config.options,
+            width: config.width,
+            height: config.height
+          }
         });
       }
       setShowSuccess(true);
