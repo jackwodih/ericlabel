@@ -42,9 +42,8 @@ export function LogoUpload({
         <CldUploadWidget 
           uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'label_designs'}
           onSuccess={(results) => {
-            const info = results.info as any; // Still cast but avoid any in signature
-            if (info && info.secure_url) {
-              onUpload(info.secure_url);
+            if (typeof results.info !== 'string' && results.info?.secure_url) {
+              onUpload(results.info.secure_url);
             }
           }}
           options={{
