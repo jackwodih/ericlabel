@@ -71,6 +71,12 @@ export default function CheckoutPage() {
         createdAt: serverTimestamp(),
       };
 
+      if (!db) {
+        alert("La connexion à la base de données est indisponible. Veuillez réessayer plus tard.");
+        setIsProcessing(false);
+        return;
+      }
+      
       const docRef = await addDoc(collection(db, 'orders'), orderData);
       
       // Clear cart after success
@@ -120,9 +126,7 @@ export default function CheckoutPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="grid lg:grid-cols-12 gap-12">
-          {/* Left Column: Forms */}
           <div className="lg:col-span-8 space-y-8">
-            {/* Section 1: User Info */}
             <section className="space-y-6">
               <div className="flex items-center gap-3 text-xl font-bold border-b border-white/5 pb-4">
                 <User className="w-6 h-6 text-orange-500" />
@@ -160,7 +164,6 @@ export default function CheckoutPage() {
               </div>
             </section>
 
-            {/* Section 2: Shipping */}
             <section className="space-y-6">
               <div className="flex items-center gap-3 text-xl font-bold border-b border-white/5 pb-4">
                 <MapPin className="w-6 h-6 text-orange-500" />
@@ -202,7 +205,6 @@ export default function CheckoutPage() {
               </div>
             </section>
 
-            {/* Section 3: Payment */}
             <section className="space-y-6">
               <div className="flex items-center gap-3 text-xl font-bold border-b border-white/5 pb-4">
                 <CreditCard className="w-6 h-6 text-orange-500" />
@@ -241,7 +243,6 @@ export default function CheckoutPage() {
             </section>
           </div>
 
-          {/* Right Column: Order Summary UI */}
           <div className="lg:col-span-4 space-y-6">
             <Card glass className="sticky top-32 overflow-hidden">
                <h3 className="text-xl font-bold mb-6 flex items-center gap-2">

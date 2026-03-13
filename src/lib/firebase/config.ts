@@ -1,7 +1,7 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,14 +14,30 @@ const firebaseConfig = {
 };
 
 // Check if we have the minimum requirements to initialize Firebase
-const isConfigValid = !!firebaseConfig.apiKey && !!firebaseConfig.projectId;
+const isConfigValid = 
+  !!firebaseConfig.apiKey && 
+  firebaseConfig.apiKey.length > 20 &&
+  !!firebaseConfig.projectId;
 
-const app = (getApps().length === 0 && isConfigValid) 
-  ? initializeApp(firebaseConfig) 
-  : (getApps()[0] || null) as FirebaseApp;
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
+let storage: FirebaseStorage | null = null;
 
-const auth = app ? getAuth(app) : null;
-const db = app ? getFirestore(app) : null;
-const storage = app ? getStorage(app) : null;
+try {
+  if (getApps().length > 0) {
+    app = getApps()[0];
+  } else if (isConfigValid) {
+    app = initializeApp(firebaseConfig);
+  }
+
+  if (app) {
+    auth = getAuth(app);
+    db = getFirestore(app);
+    storage = getStorage(app);
+  }
+} catch (error) {
+  console.error("Firebase initialization skipped or failed:", error);
+}
 
 export { app, auth, db, storage };
