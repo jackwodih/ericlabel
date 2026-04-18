@@ -186,8 +186,8 @@ export function LabelDesigner() {
               layoutId="label-preview"
               className={`relative shadow-2xl overflow-hidden rounded-sm flex items-center justify-center`}
               style={{
-                width: config.width * 40,
-                height: config.height * 40,
+                width: (config.width ?? 0) * 40,
+                height: (config.height ?? 0) * 40,
                 backgroundColor: materialColor
               }}
             >
@@ -214,7 +214,7 @@ export function LabelDesigner() {
                 )}
                 <span 
                   className={`relative z-10 font-bold tracking-widest text-center ${fontFamily}`}
-                  style={{ color, fontSize: Math.min(config.height * 10, config.width * 5) }}
+                  style={{ color, fontSize: Math.min((config.height ?? 0) * 10, (config.width ?? 0) * 5) }}
                 >
                   {text || 'VOTRE NOM'}
                 </span>
