@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { LogoUpload } from './LogoUpload';
-import { calculatePrice } from '@/lib/pricing/calculator';
+import { calculatePrice, getDefaultRule } from '@/lib/pricing/calculator';
 import { PricingInput, PricingResult } from '@/lib/pricing/types';
 import { useCartStore } from '@/store/cartStore';
 import { db } from '@/lib/firebase/config';
@@ -37,6 +37,7 @@ export function LabelDesigner() {
   const [loadingMaterials, setLoadingMaterials] = useState(true);
   const [activeStep, setActiveStep] = useState(1);
   const [config, setConfig] = useState<PricingInput>({
+    productType: 'label',
     material: '', // Will be set after loading
     width: 6,
     height: 2,
@@ -71,9 +72,11 @@ export function LabelDesigner() {
             ? data.find(m => m.name.toLowerCase().replace(/\s+/g, '-') === materialParam)
             : null;
           
+          const selected = preSelected || data[0];
           setConfig(prev => ({ 
             ...prev, 
-            material: preSelected ? preSelected.id! : data[0].id! 
+            material: selected.id!,
+            productType: selected.productType 
           }));
         }
       } catch (error) {
@@ -90,8 +93,10 @@ export function LabelDesigner() {
       const selectedMaterial = materials.find(m => m.id === config.material);
       if (selectedMaterial) {
         setMaterialColor(selectedMaterial.color1);
+        setPricing(calculatePrice(config, selectedMaterial as any));
+      } else {
+        setPricing(calculatePrice(config, getDefaultRule('similicuir')));
       }
-      setPricing(calculatePrice(config, selectedMaterial as unknown as PricingRule));
     }
   }, [config, materials]);
 
@@ -311,7 +316,7 @@ export function LabelDesigner() {
                       materials.map((m) => (
                         <button
                           key={m.id}
-                          onClick={() => setConfig({ ...config, material: m.id! })}
+                          onClick={() => setConfig({ ...config, material: m.id!, productType: m.productType })}
                           className={`p-4 rounded-xl text-left transition-all border ${
                             config.material === m.id 
                               ? 'bg-white/10 border-orange-500 shadow-[0_0_15px_rgba(234,88,12,0.3)]' 

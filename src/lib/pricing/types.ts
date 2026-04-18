@@ -1,14 +1,21 @@
+export type ProductType = 'label' | 'packaging' | 'button' | 'accessory';
+
 export interface PricingInput {
+  productType: ProductType;
   material: string;
-  width: number;
-  height: number;
+  // Dimensions flexibles
+  width?: number;
+  height?: number;
+  depth?: number;
+  diameter?: number;
+  
   quantity: number;
   options: {
     colors?: number;
     customText?: boolean;
     customImage?: boolean;
     finish?: 'standard' | 'premium' | 'luxury';
-    technique?: 'print' | 'embroidery' | 'engraving' | 'uv' | 'weaving';
+    technique?: string;
     express?: boolean;
     preview3D?: boolean;
   };
@@ -36,8 +43,14 @@ export interface PricingResult {
 export interface PricingRule {
   id: string;
   material: string;
+  productType: ProductType;
+  pricingModel: 'surface' | 'unit' | 'volume';
+  
   basePrice: number;
-  pricePerSqCm: number;
+  pricePerSqCm?: number; // Pour 'surface'
+  pricePerUnit?: number; // Pour 'unit'
+  pricePerCm3?: number;  // Pour 'volume'
+  
   minimumPrice: number;
   sizeBreaks: {
     minSize: number;
@@ -53,18 +66,8 @@ export interface PricingRule {
     colorExtra?: number;
     customText?: number;
     customImage?: number;
-    finishes?: {
-      standard: number;
-      premium: number;
-      luxury: number;
-    };
-    techniques?: {
-      print?: number;
-      embroidery?: number;
-      engraving?: number;
-      uv?: number;
-      weaving?: number;
-    };
+    finishes?: Record<string, number>;
+    techniques?: Record<string, number>;
     express?: number;
     preview3D?: number;
   };

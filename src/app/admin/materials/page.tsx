@@ -20,8 +20,12 @@ import {
   Save
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/lib/firebase/config';
+import { useRouter } from 'next/navigation';
 
 export default function AdminMaterialsPage() {
+  const router = useRouter();
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -31,8 +35,12 @@ export default function AdminMaterialsPage() {
   const initialMaterial: Material = {
     name: '',
     description: '',
+    productType: 'label',
+    pricingModel: 'surface',
     basePrice: 500,
     pricePerSqCm: 50,
+    pricePerUnit: 0,
+    pricePerCm3: 0,
     color1: '#f97316',
     color2: '#9a3412',
     techniques: ['print'],
@@ -50,6 +58,17 @@ export default function AdminMaterialsPage() {
     window.addEventListener('focus', fixScroll);
     return () => window.removeEventListener('focus', fixScroll);
   }, []);
+
+  // Auth Check
+  useEffect(() => {
+    if (!auth) return;
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push('/login');
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
 
   useEffect(() => {
     loadMaterials();
@@ -179,20 +198,71 @@ export default function AdminMaterialsPage() {
                             onChange={e => setNewMaterial({...newMaterial, description: e.target.value})}
                           />
                         </div>
+                        <div className="grid md:grid-cols-2 gap-6 md:col-span-2">
+                          <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-400">Type de Produit</label>
+                            <select 
+                              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
+                              value={newMaterial.productType}
+                              onChange={e => setNewMaterial({...newMaterial, productType: e.target.value as any})}
+                            >
+                              <option value="label">Étiquette / Ruban</option>
+                              <option value="button">Bouton</option>
+                              <option value="packaging">Emballage / Boîte</option>
+                              <option value="accessory">Accessoire</option>
+                            </select>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-400">Modèle de Tarification</label>
+                            <select 
+                              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
+                              value={newMaterial.pricingModel}
+                              onChange={e => setNewMaterial({...newMaterial, pricingModel: e.target.value as any})}
+                            >
+                              <option value="surface">Par Surface (cm²)</option>
+                              <option value="unit">Par Unité (Pièce)</option>
+                              <option value="volume">Par Volume (cm³)</option>
+                            </select>
+                          </div>
+                        </div>
+
                         <Input 
                           type="number" 
-                          label="Prix de base (FCFA)" 
+                          label="Frais Techniques / Base (FCFA)" 
                           icon={<span className="text-xs font-bold">F</span>}
                           value={newMaterial.basePrice}
                           onChange={e => setNewMaterial({...newMaterial, basePrice: Number(e.target.value)})}
                         />
-                        <Input 
-                          type="number" 
-                          label="Prix par cm² (FCFA)" 
-                          icon={<span className="text-xs font-bold">cm²</span>}
-                          value={newMaterial.pricePerSqCm}
-                          onChange={e => setNewMaterial({...newMaterial, pricePerSqCm: Number(e.target.value)})}
-                        />
+
+                        {newMaterial.pricingModel === 'surface' && (
+                          <Input 
+                            type="number" 
+                            label="Prix par cm² (FCFA)" 
+                            icon={<span className="text-xs font-bold">cm²</span>}
+                            value={newMaterial.pricePerSqCm}
+                            onChange={e => setNewMaterial({...newMaterial, pricePerSqCm: Number(e.target.value)})}
+                          />
+                        )}
+                        
+                        {newMaterial.pricingModel === 'unit' && (
+                          <Input 
+                            type="number" 
+                            label="Prix par Unité (FCFA)" 
+                            icon={<span className="text-xs font-bold">Pcs</span>}
+                            value={newMaterial.pricePerUnit}
+                            onChange={e => setNewMaterial({...newMaterial, pricePerUnit: Number(e.target.value)})}
+                          />
+                        )}
+
+                        {newMaterial.pricingModel === 'volume' && (
+                          <Input 
+                            type="number" 
+                            label="Prix par cm³ (FCFA)" 
+                            icon={<span className="text-xs font-bold">cm³</span>}
+                            value={newMaterial.pricePerCm3}
+                            onChange={e => setNewMaterial({...newMaterial, pricePerCm3: Number(e.target.value)})}
+                          />
+                        )}
                       </div>
                     </section>
 

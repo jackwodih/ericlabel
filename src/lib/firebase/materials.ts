@@ -9,18 +9,28 @@ import {
 } from 'firebase/firestore';
 import { db } from './config';
 
+import { ProductType } from './pricing/types';
+
 export interface Material {
   id?: string;
   name: string;
   description: string;
+  productType: ProductType;
+  pricingModel: 'surface' | 'unit' | 'volume';
   basePrice: number;
-  pricePerSqCm: number;
-  textureUrl?: string; // Image de texture Cloudinary
-  color1: string; // Pour le dégradé fallback
-  color2: string; // Pour le dégradé fallback
+  pricePerSqCm?: number;
+  pricePerUnit?: number;
+  pricePerCm3?: number;
+  textureUrl?: string;
+  color1: string;
+  color2: string;
   techniques: string[];
   active: boolean;
   createdAt?: Date;
+  optionPrices?: any; // Pour compatibilité PricingRule
+  quantityBreaks?: any[];
+  taxRate?: number;
+  minimumPrice?: number;
 }
 
 const COLLECTION_NAME = 'materials';
@@ -31,7 +41,16 @@ export const materialService = {
     if (!db) return [];
     const q = query(collection(db, COLLECTION_NAME), where('active', '==', true));
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Material[];
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return { 
+        id: doc.id, 
+        ...data,
+        // Valeurs par défaut pour l'évolutivité
+        productType: data.productType || 'label',
+        pricingModel: data.pricingModel || 'surface',
+      };
+    }) as Material[];
   },
 
   // Ajouter un nouveau matériau

@@ -4,6 +4,8 @@ const defaultRules: Record<string, PricingRule> = {
   similicuir: {
     id: 'rule-similicuir',
     material: 'similicuir',
+    productType: 'label',
+    pricingModel: 'surface',
     basePrice: 500,
     pricePerSqCm: 150,
     minimumPrice: 1000,
@@ -23,6 +25,8 @@ const defaultRules: Record<string, PricingRule> = {
   satin: {
     id: 'rule-satin',
     material: 'satin',
+    productType: 'label',
+    pricingModel: 'surface',
     basePrice: 300,
     pricePerSqCm: 50,
     minimumPrice: 500,
@@ -41,6 +45,8 @@ const defaultRules: Record<string, PricingRule> = {
   tisse: {
     id: 'rule-tisse',
     material: 'tissé',
+    productType: 'label',
+    pricingModel: 'surface',
     basePrice: 400,
     pricePerSqCm: 80,
     minimumPrice: 800,
@@ -58,22 +64,35 @@ const defaultRules: Record<string, PricingRule> = {
   }
 };
 
-export const calculatePrice = (input: PricingInput, providedRule?: PricingRule): PricingResult => {
-  const rule = providedRule || defaultRules[input.material] || defaultRules.similicuir;
-  
-  const area = input.width * input.height;
-  const materialPrice = area * (rule.pricePerSqCm || 0);
+export const calculatePrice = (input: PricingInput, rule: PricingRule): PricingResult => {
+  let materialPrice = 0;
   const basePrice = rule.basePrice || 0;
+  
+  // 1. Calcul de la composante matérielle selon le modèle
+  switch (rule.pricingModel) {
+    case 'surface':
+      const area = (input.width || 0) * (input.height || 0);
+      materialPrice = area * (rule.pricePerSqCm || 0);
+      break;
+    case 'volume':
+      const volume = (input.width || 0) * (input.height || 0) * (input.depth || 0);
+      materialPrice = volume * (rule.pricePerCm3 || 0);
+      break;
+    case 'unit':
+      materialPrice = rule.pricePerUnit || 0;
+      break;
+    default:
+      materialPrice = 0;
+  }
   
   let optionsPrice = 0;
   const breakdown: PricingResult['breakdown'] = [
     { label: 'Prix de base matériau', amount: basePrice + materialPrice },
   ];
 
-  // OptionPrices might be undefined in dynamic materials from Firebase
+  // 2. Calcul des options
   if (input.options.finish && rule.optionPrices?.finishes) {
-    const finishes = rule.optionPrices.finishes as Record<string, number>;
-    const extra = finishes[input.options.finish] || 0;
+    const extra = rule.optionPrices.finishes[input.options.finish] || 0;
     if (extra > 0) {
       optionsPrice += extra;
       breakdown.push({ label: `Finition: ${input.options.finish}`, amount: extra });
@@ -81,14 +100,14 @@ export const calculatePrice = (input: PricingInput, providedRule?: PricingRule):
   }
 
   if (input.options.technique && rule.optionPrices?.techniques) {
-    const techniques = rule.optionPrices.techniques as Record<string, number>;
-    const extra = techniques[input.options.technique] || 0;
+    const extra = rule.optionPrices.techniques[input.options.technique] || 0;
     if (extra > 0) {
       optionsPrice += extra;
       breakdown.push({ label: `Technique: ${input.options.technique}`, amount: extra });
     }
   }
 
+  // 3. Sous-total et Remises sur quantité
   const subtotalBeforeDiscount = (basePrice + materialPrice + optionsPrice) * input.quantity;
   
   let discount = 0;
@@ -106,7 +125,7 @@ export const calculatePrice = (input: PricingInput, providedRule?: PricingRule):
   return {
     basePrice,
     materialPrice,
-    sizePrice: materialPrice, // Simplified
+    sizePrice: materialPrice,
     optionsPrice,
     quantityDiscount: discount,
     subtotal,
@@ -116,4 +135,9 @@ export const calculatePrice = (input: PricingInput, providedRule?: PricingRule):
     currency: 'FCFA',
     breakdown
   };
+};
+
+// Export fallback generator for when rule is missing
+export const getDefaultRule = (materialIdOrName: string): PricingRule => {
+  return defaultRules[materialIdOrName] || defaultRules.similicuir;
 };
