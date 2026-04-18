@@ -9,7 +9,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './config';
 
-import { ProductType, PricingRule } from './pricing/types';
+import { ProductType, PricingRule } from '@/lib/pricing/types';
 
 export interface Material {
   id?: string;
