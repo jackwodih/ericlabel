@@ -23,7 +23,7 @@ import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { LogoUpload } from './LogoUpload';
 import { calculatePrice, getDefaultRule } from '@/lib/pricing/calculator';
-import { PricingInput, PricingResult } from '@/lib/pricing/types';
+import { PricingInput, PricingResult, PricingRule } from '@/lib/pricing/types';
 import { useCartStore } from '@/store/cartStore';
 import { db } from '@/lib/firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
