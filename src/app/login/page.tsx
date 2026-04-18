@@ -27,7 +27,7 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/admin/materials');
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setError('Identifiants invalides. Veuillez réessayer.');
     } finally {
@@ -92,7 +92,7 @@ export default function LoginPage() {
 
         <div className="mt-8 text-center">
           <p className="text-xs text-gray-500">
-            Réservé à l'équipe Label Eric.
+            Réservé à l&apos;équipe Label Eric.
           </p>
         </div>
       </Card>

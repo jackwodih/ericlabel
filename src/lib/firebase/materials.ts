@@ -9,7 +9,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './config';
 
-import { ProductType } from './pricing/types';
+import { ProductType, PricingRule } from './pricing/types';
 
 export interface Material {
   id?: string;
@@ -27,8 +27,8 @@ export interface Material {
   techniques: string[];
   active: boolean;
   createdAt?: Date;
-  optionPrices?: any; // Pour compatibilité PricingRule
-  quantityBreaks?: any[];
+  optionPrices?: PricingRule['optionPrices']; 
+  quantityBreaks?: PricingRule['quantityBreaks'];
   taxRate?: number;
   minimumPrice?: number;
 }

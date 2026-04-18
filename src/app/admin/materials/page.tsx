@@ -204,7 +204,7 @@ export default function AdminMaterialsPage() {
                             <select 
                               className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
                               value={newMaterial.productType}
-                              onChange={e => setNewMaterial({...newMaterial, productType: e.target.value as any})}
+                              onChange={e => setNewMaterial({...newMaterial, productType: e.target.value as 'label' | 'packaging' | 'button' | 'accessory'})}
                             >
                               <option value="label">Étiquette / Ruban</option>
                               <option value="button">Bouton</option>
@@ -217,7 +217,7 @@ export default function AdminMaterialsPage() {
                             <select 
                               className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
                               value={newMaterial.pricingModel}
-                              onChange={e => setNewMaterial({...newMaterial, pricingModel: e.target.value as any})}
+                              onChange={e => setNewMaterial({...newMaterial, pricingModel: e.target.value as 'surface' | 'unit' | 'volume'})}
                             >
                               <option value="surface">Par Surface (cm²)</option>
                               <option value="unit">Par Unité (Pièce)</option>

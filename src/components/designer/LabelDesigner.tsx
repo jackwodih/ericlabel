@@ -28,7 +28,6 @@ import { useCartStore } from '@/store/cartStore';
 import { db } from '@/lib/firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { materialService, Material } from '@/lib/firebase/materials';
-import { PricingRule } from '@/lib/pricing/types';
 
 // Hardcoded materials removed, now fetching from Firebase
 
@@ -93,7 +92,7 @@ export function LabelDesigner() {
       const selectedMaterial = materials.find(m => m.id === config.material);
       if (selectedMaterial) {
         setMaterialColor(selectedMaterial.color1);
-        setPricing(calculatePrice(config, selectedMaterial as any));
+        setPricing(calculatePrice(config, selectedMaterial as unknown as PricingRule));
       } else {
         setPricing(calculatePrice(config, getDefaultRule('similicuir')));
       }
