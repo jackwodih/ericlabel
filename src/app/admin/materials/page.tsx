@@ -376,7 +376,7 @@ export default function AdminMaterialsPage() {
                          <div>
                            <p className="text-[10px] text-gray-500 uppercase font-bold">Prix indicatif (5*2cm)</p>
                            <p className="text-lg font-black text-orange-500">
-                             {Math.round(newMaterial.basePrice + (10 * newMaterial.pricePerSqCm))} FCFA
+                             {Math.round(newMaterial.basePrice + (10 * (newMaterial.pricePerSqCm ?? 0)))} FCFA
                            </p>
                          </div>
                          <div className="text-right">
@@ -466,7 +466,7 @@ export default function AdminMaterialsPage() {
                            </div>
                            <div className="text-right">
                              <p className="text-[10px] text-gray-500 uppercase font-bold">cm²</p>
-                             <p className="font-mono text-white font-bold">{m.pricePerSqCm} FCFA</p>
+                             <p className="font-mono text-white font-bold">{(m.pricePerSqCm ?? 0)} FCFA</p>
                            </div>
                         </div>
                       </div>
