@@ -135,8 +135,8 @@ export function LabelDesigner() {
           },
           options: {
             ...config.options,
-            width: config.width,
-            height: config.height
+            width: config.width || 0,
+            height: config.height || 0
           }
         });
       } else {
@@ -158,8 +158,8 @@ export function LabelDesigner() {
           },
           options: {
             ...config.options,
-            width: config.width,
-            height: config.height
+            width: config.width || 0,
+            height: config.height || 0
           }
         });
       }
