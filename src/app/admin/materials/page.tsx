@@ -48,6 +48,7 @@ export default function AdminMaterialsPage() {
     pricePerSqCm: 50,
     pricePerUnit: 0,
     pricePerCm3: 0,
+    color1: '#f97316',
     color2: '#9a3412',
     techniques: ['print'],
     active: true,
