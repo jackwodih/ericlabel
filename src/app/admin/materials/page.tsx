@@ -228,23 +228,24 @@ export default function AdminMaterialsPage() {
                           <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-400">Univers du Produit</label>
                             <select 
-                              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
-                              value={newMaterial.categoryId}
-                              onChange={e => {
-                                const cat = categories.find(c => c.id === e.target.value);
-                                setNewMaterial({
-                                  ...newMaterial, 
-                                  categoryId: e.target.value,
-                                  productType: cat?.slug || 'generic',
-                                  pricingModel: cat?.pricingModel || 'surface'
-                                });
-                              }}
-                            >
-                              <option value="">Sélectionner un univers...</option>
-                              {categories.map(cat => (
-                                <option key={cat.id} value={cat.id}>{cat.name}</option>
-                              ))}
-                            </select>
+                               className="w-full bg-slate-900 border border-white/10 rounded-lg px-4 py-2 text-white outline-none focus:border-orange-500 appearance-none pointer-events-auto"
+                               style={{ colorScheme: 'dark' }}
+                               value={newMaterial.categoryId}
+                               onChange={e => {
+                                 const cat = categories.find(c => c.id === e.target.value);
+                                 setNewMaterial({
+                                   ...newMaterial, 
+                                   categoryId: e.target.value,
+                                   productType: cat?.slug || 'generic',
+                                   pricingModel: cat?.pricingModel || 'surface'
+                                 });
+                               }}
+                             >
+                               <option value="" className="bg-slate-900 text-white">Sélectionner un univers...</option>
+                               {categories.map(cat => (
+                                 <option key={cat.id} value={cat.id} className="bg-slate-900 text-white">{cat.name}</option>
+                               ))}
+                             </select>
                             {categories.length === 0 && (
                                 <p className="text-[10px] text-orange-400 italic">Aucun univers trouvé. Créez-en un d&apos;abord.</p>
                             )}
@@ -339,7 +340,7 @@ export default function AdminMaterialsPage() {
                           <label className="block text-sm font-medium text-gray-400">Dégradé de couleur principal</label>
                           <div className="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-white/10">
                             <div className="flex-1 space-y-1">
-                               <p className="text-[10px] text-gray-500 uppercase font-bold">Couleur Haut</p>
+                               <p className="text-[10px] text-gray-500 uppercase font-bold">Couleur Haut (Matière)</p>
                                <input 
                                 type="color" 
                                 className="w-full h-12 rounded-lg bg-transparent cursor-pointer border-none"
@@ -349,7 +350,7 @@ export default function AdminMaterialsPage() {
                             </div>
                             <div className="w-px h-10 bg-white/10" />
                             <div className="flex-1 space-y-1">
-                               <p className="text-[10px] text-gray-500 uppercase font-bold">Couleur Bas</p>
+                               <p className="text-[10px] text-gray-500 uppercase font-bold">Couleur Bas (Fond)</p>
                                <input 
                                 type="color" 
                                 className="w-full h-12 rounded-lg bg-transparent cursor-pointer border-none"
@@ -578,7 +579,7 @@ export default function AdminMaterialsPage() {
                     <div 
                       className="aspect-square w-full flex items-center justify-center p-8 transition-all duration-700"
                       style={{ 
-                        background: `linear-gradient(to bottom right, ${newMaterial.color1}, ${newMaterial.color2})`
+                        backgroundColor: newMaterial.color2 // BAS = FOND DE SCENE
                       }}
                     >
                       {/* Texture Layer */}
@@ -594,7 +595,7 @@ export default function AdminMaterialsPage() {
                       
                       {/* Decorative Label Rendering */}
                       <div 
-                        className={`relative z-10 bg-white/10 backdrop-blur-sm border border-white/20 shadow-2xl flex items-center justify-center overflow-hidden transition-all duration-500 ${
+                        className={`relative z-10 shadow-2xl flex items-center justify-center overflow-hidden transition-all duration-500 ${
                           newMaterial.shape === 'circle' ? 'rounded-full' :
                           newMaterial.shape === 'oval' ? 'rounded-full' :
                           newMaterial.shape === 'rounded' ? 'rounded-2xl' :
@@ -603,10 +604,11 @@ export default function AdminMaterialsPage() {
                         }`}
                         style={{
                           width: (newMaterial.defaultWidth || 1) * 40,
-                          height: (newMaterial.defaultHeight || 1) * 40
+                          height: (newMaterial.defaultHeight || 1) * 40,
+                          backgroundColor: newMaterial.color1 // HAUT = MATIERE
                         }}
                       >
-                        <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+                         <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
                         <span 
                           className="relative z-10 font-bold tracking-widest text-white text-center px-2 break-words"
                           style={{ 
@@ -672,9 +674,9 @@ export default function AdminMaterialsPage() {
                     <Card key={m.id} glass className="p-0 overflow-hidden border-white/5 group hover:border-orange-500/30 transition-all duration-500 shadow-2xl">
                       <div 
                         className="h-48 relative overflow-hidden flex items-center justify-center"
-                        style={{ background: `linear-gradient(to bottom right, ${m.color1}, ${m.color2})` }}
+                        style={{ backgroundColor: m.color2 }} // FOND
                       >
-                         <div className={`relative bg-white/10 backdrop-blur-sm border border-white/20 shadow-xl flex items-center justify-center overflow-hidden ${
+                         <div className={`relative shadow-xl flex items-center justify-center overflow-hidden ${
                             m.shape === 'circle' ? 'rounded-full' :
                             m.shape === 'oval' ? 'rounded-full' :
                             m.shape === 'rounded' ? 'rounded-xl' :
@@ -683,7 +685,8 @@ export default function AdminMaterialsPage() {
                          }`}
                          style={{ 
                             width: (m.defaultWidth || 1) * 10,
-                            height: (m.defaultHeight || 1) * 10
+                            height: (m.defaultHeight || 1) * 10,
+                            backgroundColor: m.color1 // MATIERE
                          }}>
                            {/* Texture inside the shape */}
                            {m.textureUrl && (
