@@ -64,7 +64,28 @@ const defaultRules: Record<string, PricingRule> = {
   }
 };
 
-export const calculatePrice = (input: PricingInput, rule: PricingRule): PricingResult => {
+export const calculatePrice = (input: PricingInput, baseRule: PricingRule): PricingResult => {
+  const rule = { ...baseRule };
+
+  // Apply variant overrides if a variant is selected
+  if (input.variantId && rule.variants) {
+    const variant = rule.variants.find(v => v.id === input.variantId);
+    if (variant) {
+      // If variant has a specific price, we use it and reset parent's base price 
+      // to ensure it's a "total price" as requested.
+      if (variant.basePrice !== undefined) {
+        rule.basePrice = variant.basePrice;
+      } else if (variant.pricePerUnit !== undefined || variant.pricePerSqCm !== undefined) {
+        // If variant defines a unit/surface price but not a basePrice, we assume basePrice is 0 for this variant
+        rule.basePrice = 0;
+      }
+
+      if (variant.pricePerSqCm !== undefined) rule.pricePerSqCm = variant.pricePerSqCm;
+      if (variant.pricePerUnit !== undefined) rule.pricePerUnit = variant.pricePerUnit;
+      if (variant.pricePerCm3 !== undefined) rule.pricePerCm3 = variant.pricePerCm3;
+    }
+  }
+
   let materialPrice = 0;
   const basePrice = rule.basePrice || 0;
   

@@ -47,6 +47,12 @@ export function LabelDesigner() {
       finish: 'standard',
       technique: 'print',
       customText: true,
+    },
+    logoSettings: {
+      x: 50,
+      y: 50,
+      scale: 1,
+      blendMode: 'normal'
     }
   });
   const [text, setText] = useState('MARQUE');
@@ -100,15 +106,20 @@ export function LabelDesigner() {
   const selectedCategory = categories.find(c => c.id === selectedMaterial?.categoryId) || null;
 
   useEffect(() => {
-    if (config.material) {
-      if (selectedMaterial) {
-        setMaterialColor(selectedMaterial.color1);
-        setPricing(calculatePrice(config, selectedMaterial as unknown as PricingRule));
+    if (config.material && selectedMaterial) {
+      // Priorité à la couleur de la variante si elle existe
+      const activeVariant = selectedMaterial.variants?.find(v => v.id === config.variantId);
+      if (activeVariant) {
+        setMaterialColor(activeVariant.color);
       } else {
-        setPricing(calculatePrice(config, getDefaultRule('similicuir')));
+        setMaterialColor(selectedMaterial.color1);
       }
+      
+      setPricing(calculatePrice(config, selectedMaterial as unknown as PricingRule));
+    } else if (config.material && !selectedMaterial) {
+      setPricing(calculatePrice(config, getDefaultRule('similicuir')));
     }
-  }, [config, materials, selectedMaterial]);
+  }, [config.material, config.variantId, materials, selectedMaterial]);
 
   const handleAddToCart = async () => {
     if (!pricing) return;
@@ -207,23 +218,33 @@ export function LabelDesigner() {
               }}
             >
               {/* Texture Layer */}
-              {selectedMaterial?.textureUrl && (
+              {(selectedMaterial?.variants?.find(v => v.id === config.variantId)?.textureUrl || selectedMaterial?.textureUrl) && (
                 <div 
                   className="absolute inset-0 opacity-40 mix-blend-overlay"
                   style={{ 
-                    backgroundImage: `url(${selectedMaterial.textureUrl})`,
+                    backgroundImage: `url(${selectedMaterial?.variants?.find(v => v.id === config.variantId)?.textureUrl || selectedMaterial?.textureUrl})`,
                     backgroundSize: 'cover'
                   }}
                 />
               )}
               
-                {logoUrl && (
-                  <div className="absolute left-4 w-12 h-12">
+                {logoUrl && config.logoSettings && (
+                  <div 
+                    className="absolute pointer-events-none"
+                    style={{ 
+                      left: `${config.logoSettings.x}%`,
+                      top: `${config.logoSettings.y}%`,
+                      width: `${64 * config.logoSettings.scale}px`,
+                      height: `${64 * config.logoSettings.scale}px`,
+                      transform: 'translate(-50%, -50%)',
+                      mixBlendMode: config.logoSettings.blendMode as any
+                    }}
+                  >
                     <Image 
                       src={logoUrl} 
                       alt="Logo preview" 
                       fill 
-                      className="object-contain mix-blend-multiply opacity-80" 
+                      className="object-contain" 
                     />
                   </div>
                 )}
@@ -368,6 +389,30 @@ export function LabelDesigner() {
                             <div>
                               <p className="text-white font-semibold">{m.name}</p>
                               <p className="text-gray-400 text-xs line-clamp-1">{m.description}</p>
+                              
+                              {/* Variants list if active material */}
+                              {config.material === m.id && m.variants && m.variants.length > 0 && (
+                                <div className="mt-3 flex flex-wrap gap-2 pt-3 border-t border-white/5">
+                                  {m.variants.map((v) => (
+                                    <button
+                                      key={v.id}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setConfig({ ...config, variantId: v.id });
+                                        setMaterialColor(v.color);
+                                      }}
+                                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold transition-all ${
+                                        config.variantId === v.id 
+                                          ? 'bg-orange-500 text-white shadow-lg' 
+                                          : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                      }`}
+                                    >
+                                      <div className="w-3 h-3 rounded-full border border-white/20" style={{ backgroundColor: v.color }} />
+                                      {v.name}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                             {config.material === m.id && <Check className="ml-auto text-orange-500" />}
                           </div>
@@ -508,6 +553,80 @@ export function LabelDesigner() {
                       onRemove={() => setLogoUrl(null)} 
                       value={logoUrl || undefined} 
                     />
+
+                    {logoUrl && config.logoSettings && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="mt-6 p-4 bg-orange-500/5 rounded-xl border border-orange-500/10 space-y-4"
+                      >
+                         <h4 className="text-xs font-bold uppercase tracking-wider text-orange-500">Réglages du logo</h4>
+                         
+                         <div className="grid grid-cols-2 gap-4">
+                           <div className="space-y-2">
+                             <label className="text-[10px] text-gray-400">Position X</label>
+                             <input 
+                                type="range" min="0" max="100" 
+                                className="w-full accent-orange-500 bg-white/5"
+                                value={config.logoSettings.x}
+                                onChange={(e) => setConfig({
+                                  ...config, 
+                                  logoSettings: { ...config.logoSettings!, x: Number(e.target.value) }
+                                })}
+                             />
+                           </div>
+                           <div className="space-y-2">
+                             <label className="text-[10px] text-gray-400">Position Y</label>
+                             <input 
+                                type="range" min="0" max="100" 
+                                className="w-full accent-orange-500 bg-white/5"
+                                value={config.logoSettings.y}
+                                onChange={(e) => setConfig({
+                                  ...config, 
+                                  logoSettings: { ...config.logoSettings!, y: Number(e.target.value) }
+                                })}
+                             />
+                           </div>
+                         </div>
+
+                         <div className="space-y-2">
+                            <label className="text-[10px] text-gray-400">Taille du logo</label>
+                            <input 
+                               type="range" min="0.2" max="3" step="0.1"
+                               className="w-full accent-orange-500 bg-white/5"
+                               value={config.logoSettings.scale}
+                               onChange={(e) => setConfig({
+                                 ...config, 
+                                 logoSettings: { ...config.logoSettings!, scale: Number(e.target.value) }
+                               })}
+                            />
+                         </div>
+
+                         <div className="pt-2">
+                           <label className="text-[10px] text-gray-400 mb-2 block">Effet de rendu</label>
+                           <div className="grid grid-cols-2 gap-2">
+                              <button 
+                                onClick={() => setConfig({
+                                  ...config, 
+                                  logoSettings: { ...config.logoSettings!, blendMode: 'normal' }
+                                })}
+                                className={`py-2 rounded-lg text-[10px] font-bold border ${config.logoSettings.blendMode === 'normal' ? 'bg-orange-500 border-orange-400 text-white' : 'bg-white/5 border-white/10 text-gray-400'}`}
+                              >
+                                Réel (Photo)
+                              </button>
+                              <button 
+                                onClick={() => setConfig({
+                                  ...config, 
+                                  logoSettings: { ...config.logoSettings!, blendMode: 'multiply' }
+                                })}
+                                className={`py-2 rounded-lg text-[10px] font-bold border ${config.logoSettings.blendMode === 'multiply' ? 'bg-orange-500 border-orange-400 text-white' : 'bg-white/5 border-white/10 text-gray-400'}`}
+                              >
+                                Incrusté (Fusion)
+                              </button>
+                           </div>
+                         </div>
+                      </motion.div>
+                    )}
                   </div>
                 </div>
 

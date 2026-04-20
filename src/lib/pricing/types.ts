@@ -21,6 +21,7 @@ export interface PricingInput {
   height?: number;
   depth?: number;
   diameter?: number;
+  variantId?: string;
   
   quantity: number;
   options: {
@@ -31,6 +32,17 @@ export interface PricingInput {
     technique?: string;
     express?: boolean;
     preview3D?: boolean;
+  };
+  logoSettings?: {
+    x: number;
+    y: number;
+    scale: number;
+    blendMode: 'normal' | 'multiply';
+  };
+  textSettings?: {
+    x: number;
+    y: number;
+    scale: number;
   };
   locale?: 'fr' | 'en';
 }
@@ -84,6 +96,7 @@ export interface PricingRule {
     express?: number;
     preview3D?: number;
   };
+  variants?: any[];
   taxRate: number;
   active: boolean;
 }

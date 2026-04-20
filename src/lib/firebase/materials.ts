@@ -35,6 +35,18 @@ export interface Material {
   shape?: 'rectangle' | 'rounded' | 'circle' | 'oval' | 'square';
   defaultWidth?: number;
   defaultHeight?: number;
+  variants?: MaterialVariant[];
+}
+
+export interface MaterialVariant {
+  id: string;
+  name: string;
+  color: string;
+  textureUrl?: string;
+  pricePerUnit?: number;
+  pricePerSqCm?: number;
+  pricePerCm3?: number;
+  basePrice?: number;
 }
 
 const COLLECTION_NAME = 'materials';

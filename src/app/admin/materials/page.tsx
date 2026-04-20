@@ -23,7 +23,8 @@ import {
   Shapes,
   Type,
   Square,
-  Circle
+  Circle,
+  Layers
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -405,6 +406,134 @@ export default function AdminMaterialsPage() {
                             Ces dimensions seront utilisées par défaut dans le designer pour ce matériau.
                           </p>
                         </div>
+                      </div>
+                    </section>
+                    
+                    {/* Variants Section */}
+                    <section className="space-y-6 pt-6 border-t border-white/5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 text-xl font-bold">
+                          <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-500">
+                            <Layers className="w-4 h-4" />
+                          </div>
+                          Variantes du produit
+                        </div>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            const newVariant = {
+                              id: Math.random().toString(36).substr(2, 9),
+                              name: '',
+                              color: '#ffffff'
+                            };
+                            setNewMaterial({
+                              ...newMaterial,
+                              variants: [...(newMaterial.variants || []), newVariant]
+                            });
+                          }}
+                          icon={<Plus className="w-4 h-4" />}
+                        >
+                          Ajouter une variante
+                        </Button>
+                      </div>
+
+                      <div className="space-y-4">
+                        {(!newMaterial.variants || newMaterial.variants.length === 0) ? (
+                          <div className="text-center py-8 bg-white/5 rounded-xl border border-dashed border-white/10">
+                            <p className="text-gray-500 text-sm">Aucune variante définie. Le produit utilisera ses paramètres par défaut.</p>
+                          </div>
+                        ) : (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                              <thead>
+                                <tr className="text-xs font-bold text-gray-500 uppercase tracking-widest border-b border-white/5">
+                                  <th className="pb-4">Nom de la variante</th>
+                                  <th className="pb-4">Couleur / Texture</th>
+                                  <th className="pb-4">Prix Total (FCFA)</th>
+                                  <th className="pb-4 text-right">Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-white/5">
+                                {newMaterial.variants.map((v, idx) => (
+                                  <tr key={v.id} className="group transition-colors">
+                                    <td className="py-4 pr-4">
+                                      <input 
+                                        className="w-full bg-slate-900 border border-white/10 rounded px-3 py-2 text-sm outline-none focus:border-orange-500"
+                                        placeholder="ex: Bois de Chêne"
+                                        value={v.name}
+                                        onChange={e => {
+                                          const updated = [...(newMaterial.variants || [])];
+                                          updated[idx].name = e.target.value;
+                                          setNewMaterial({...newMaterial, variants: updated});
+                                        }}
+                                      />
+                                    </td>
+                                    <td className="py-4 pr-4">
+                                      <div className="flex items-center gap-2">
+                                        <input 
+                                          type="color"
+                                          className="w-8 h-8 rounded bg-transparent cursor-pointer border-none"
+                                          value={v.color}
+                                          onChange={e => {
+                                            const updated = [...(newMaterial.variants || [])];
+                                            updated[idx].color = e.target.value;
+                                            setNewMaterial({...newMaterial, variants: updated});
+                                          }}
+                                        />
+                                        <LogoUpload 
+                                          onUpload={(url) => {
+                                            const updated = [...(newMaterial.variants || [])];
+                                            updated[idx].textureUrl = url;
+                                            setNewMaterial({...newMaterial, variants: updated});
+                                          }}
+                                          onRemove={() => {
+                                            const updated = [...(newMaterial.variants || [])];
+                                            updated[idx].textureUrl = '';
+                                            setNewMaterial({...newMaterial, variants: updated});
+                                          }}
+                                          value={v.textureUrl}
+                                        />
+                                      </div>
+                                    </td>
+                                    <td className="py-4 pr-4">
+                                      <input 
+                                        type="number"
+                                        className="w-32 bg-slate-900 border border-white/10 rounded px-3 py-2 text-sm outline-none focus:border-orange-500"
+                                        value={
+                                          (newMaterial.pricingModel === 'surface' ? v.pricePerSqCm :
+                                          newMaterial.pricingModel === 'unit' ? v.pricePerUnit :
+                                          v.pricePerCm3) || ''
+                                        }
+                                        onChange={e => {
+                                          const val = e.target.value === '' ? 0 : Number(e.target.value);
+                                          const updated = [...(newMaterial.variants || [])];
+                                          if (newMaterial.pricingModel === 'surface') updated[idx].pricePerSqCm = val;
+                                          else if (newMaterial.pricingModel === 'unit') updated[idx].pricePerUnit = val;
+                                          else updated[idx].pricePerCm3 = val;
+                                          setNewMaterial({...newMaterial, variants: updated});
+                                        }}
+                                      />
+                                    </td>
+                                    <td className="py-4 text-right">
+                                      <button 
+                                        type="button"
+                                        onClick={() => {
+                                          const updated = newMaterial.variants?.filter((_, i) => i !== idx);
+                                          setNewMaterial({...newMaterial, variants: updated});
+                                        }}
+                                        className="p-2 text-gray-500 hover:text-red-500 transition-colors"
+                                      >
+                                        <Trash className="w-4 h-4" />
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
                       </div>
                     </section>
 
