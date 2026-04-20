@@ -5,10 +5,7 @@ import {
   doc, 
   updateDoc, 
   query, 
-  where,
-  orderBy,
-  getDoc,
-  deleteDoc
+  where
 } from 'firebase/firestore';
 import { db } from './config';
 import { ProductCategory } from '@/lib/pricing/types';

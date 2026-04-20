@@ -65,6 +65,8 @@ export interface PricingResult {
   }[];
 }
 
+import { MaterialVariant } from '../firebase/materials';
+
 export interface PricingRule {
   id: string;
   material: string;
@@ -96,7 +98,7 @@ export interface PricingRule {
     express?: number;
     preview3D?: number;
   };
-  variants?: any[];
+  variants?: MaterialVariant[];
   taxRate: number;
   active: boolean;
 }

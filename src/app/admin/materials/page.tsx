@@ -21,7 +21,6 @@ import {
   Trash,
   Save,
   Shapes,
-  Type,
   Square,
   Circle,
   Layers
@@ -246,7 +245,7 @@ export default function AdminMaterialsPage() {
                               ))}
                             </select>
                             {categories.length === 0 && (
-                                <p className="text-[10px] text-orange-400 italic">Aucun univers trouvé. Créez-en un d'abord.</p>
+                                <p className="text-[10px] text-orange-400 italic">Aucun univers trouvé. Créez-en un d&apos;abord.</p>
                             )}
                           </div>
                           <div className="space-y-2 opacity-50">
@@ -272,7 +271,7 @@ export default function AdminMaterialsPage() {
                               <button
                                 key={s.id}
                                 type="button"
-                                onClick={() => setNewMaterial({...newMaterial, shape: s.id as any})}
+                                onClick={() => setNewMaterial({...newMaterial, shape: s.id as 'rectangle' | 'rounded' | 'circle' | 'square' | 'oval'})}
                                 className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
                                   newMaterial.shape === s.id 
                                     ? 'border-orange-500 bg-orange-500/10 text-orange-500' 
@@ -458,14 +457,24 @@ export default function AdminMaterialsPage() {
                               <tbody className="divide-y divide-white/5">
                                 {newMaterial.variants.map((v, idx) => (
                                   <tr key={v.id} className="group transition-colors">
-                                    <td className="py-4 pr-4">
+                                    <td className="py-4 pr-4 space-y-2">
                                       <input 
                                         className="w-full bg-slate-900 border border-white/10 rounded px-3 py-2 text-sm outline-none focus:border-orange-500"
-                                        placeholder="ex: Bois de Chêne"
+                                        placeholder="Nom de la variante"
                                         value={v.name}
                                         onChange={e => {
                                           const updated = [...(newMaterial.variants || [])];
                                           updated[idx].name = e.target.value;
+                                          setNewMaterial({...newMaterial, variants: updated});
+                                        }}
+                                      />
+                                      <textarea 
+                                        className="w-full bg-slate-900 border border-white/5 rounded px-3 py-1 text-[10px] outline-none focus:border-orange-500/50 text-gray-400 min-h-[40px] resize-none"
+                                        placeholder="Description optionnelle..."
+                                        value={v.description}
+                                        onChange={e => {
+                                          const updated = [...(newMaterial.variants || [])];
+                                          updated[idx].description = e.target.value;
                                           setNewMaterial({...newMaterial, variants: updated});
                                         }}
                                       />

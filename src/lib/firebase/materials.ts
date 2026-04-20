@@ -41,6 +41,7 @@ export interface Material {
 export interface MaterialVariant {
   id: string;
   name: string;
+  description?: string;
   color: string;
   textureUrl?: string;
   pricePerUnit?: number;

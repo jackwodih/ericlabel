@@ -119,7 +119,7 @@ export function LabelDesigner() {
     } else if (config.material && !selectedMaterial) {
       setPricing(calculatePrice(config, getDefaultRule('similicuir')));
     }
-  }, [config.material, config.variantId, materials, selectedMaterial]);
+  }, [config, materials, selectedMaterial]);
 
   const handleAddToCart = async () => {
     if (!pricing) return;
@@ -237,7 +237,7 @@ export function LabelDesigner() {
                       width: `${64 * config.logoSettings.scale}px`,
                       height: `${64 * config.logoSettings.scale}px`,
                       transform: 'translate(-50%, -50%)',
-                      mixBlendMode: config.logoSettings.blendMode as any
+                      mixBlendMode: config.logoSettings.blendMode
                     }}
                   >
                     <Image 
@@ -272,19 +272,51 @@ export function LabelDesigner() {
 
           {/* Pricing Summary (Desktop Overlay) */}
           <div className="mt-6 flex flex-wrap gap-4">
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 flex-1 border border-white/10">
-              <p className="text-gray-400 text-sm uppercase tracking-wider mb-1">Prix Unitaire</p>
-              <p className="text-2xl font-bold text-white">
-                {pricing ? Math.round(pricing.total / config.quantity) : 0} <span className="text-sm font-normal text-gray-400">FCFA</span>
-              </p>
-            </div>
-            <div className="bg-orange-600/20 backdrop-blur-md rounded-xl p-4 flex-1 border border-orange-500/30">
-              <p className="text-orange-200 text-sm uppercase tracking-wider mb-1">Total ({config.quantity} pcs)</p>
-              <p className="text-2xl font-bold text-orange-500">
-                {pricing ? Math.round(pricing.total) : 0} <span className="text-sm font-normal text-orange-300">FCFA</span>
-              </p>
-            </div>
+            <Card glass className="flex-1 min-w-[200px] border-white/5 bg-white/5 py-4">
+              <p className="text-[10px] text-gray-500 uppercase font-black mb-1">Prix Unitaire</p>
+              <p className="text-3xl font-black text-white">{pricing?.total ? Math.round(pricing.total / config.quantity) : 0} <span className="text-sm font-normal text-gray-400">FCFA</span></p>
+            </Card>
+            <Card glass className="flex-1 min-w-[240px] border-orange-500/20 bg-orange-500/5 py-4">
+              <p className="text-[10px] text-orange-500 uppercase font-black mb-1">Total ({config.quantity} pcs)</p>
+              <p className="text-3xl font-black text-orange-500">{pricing?.total || 0} <span className="text-sm font-normal text-orange-400">FCFA</span></p>
+            </Card>
           </div>
+
+          {/* Detailed Description Box (New) */}
+          <AnimatePresence mode="wait">
+            {(selectedMaterial || config.variantId) && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="mt-8"
+              >
+                <Card glass className="border-white/5 bg-gradient-to-r from-white/5 to-transparent p-6">
+                   <div className="flex items-start gap-4">
+                     <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500 flex-shrink-0">
+                        <Sparkles className="w-6 h-6" />
+                     </div>
+                     <div>
+                       <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Fiche technique du produit</h4>
+                       <h3 className="text-xl font-black text-white mb-2">
+                         {selectedMaterial?.name} 
+                         {config.variantId && selectedMaterial?.variants?.find(v => v.id === config.variantId) && (
+                           <span className="text-orange-500 ml-2">
+                             — {selectedMaterial.variants.find(v => v.id === config.variantId)?.name}
+                           </span>
+                         )}
+                       </h3>
+                       <p className="text-gray-400 text-sm leading-relaxed max-w-2xl">
+                         {config.variantId && selectedMaterial?.variants?.find(v => v.id === config.variantId)?.description 
+                           ? selectedMaterial.variants.find(v => v.id === config.variantId)?.description 
+                           : selectedMaterial?.description}
+                       </p>
+                     </div>
+                   </div>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <AnimatePresence>
             {showSuccess && (
@@ -408,7 +440,10 @@ export function LabelDesigner() {
                                       }`}
                                     >
                                       <div className="w-3 h-3 rounded-full border border-white/20" style={{ backgroundColor: v.color }} />
-                                      {v.name}
+                                      <div className="text-left">
+                                        <div>{v.name}</div>
+                                        {v.description && <div className="text-[8px] opacity-60 font-normal normal-case line-clamp-1">{v.description}</div>}
+                                      </div>
                                     </button>
                                   ))}
                                 </div>

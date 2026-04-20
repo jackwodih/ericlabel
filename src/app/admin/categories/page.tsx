@@ -10,16 +10,12 @@ import { ProductCategory } from '@/lib/pricing/types';
 import { 
   Plus, 
   Settings2, 
-  Layers, 
   ChevronLeft, 
   Save,
   Trash,
   Loader2,
   AlertCircle,
-  Shapes,
-  LayoutGrid,
-  Circle,
-  Square
+  Shapes
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -223,7 +219,7 @@ export default function AdminCategoriesPage() {
                         <select 
                           className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
                           value={newCategory.pricingModel}
-                          onChange={e => setNewCategory({...newCategory, pricingModel: e.target.value as any})}
+                          onChange={e => setNewCategory({...newCategory, pricingModel: e.target.value as 'surface' | 'unit' | 'volume'})}
                         >
                           <option value="surface">Par Surface (cm²) - ex: Étiquettes</option>
                           <option value="unit">Par Unité (Pièce) - ex: Mugs, Stylos</option>
@@ -236,7 +232,7 @@ export default function AdminCategoriesPage() {
                         <select 
                           className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
                           value={newCategory.previewType}
-                          onChange={e => setNewCategory({...newCategory, previewType: e.target.value as any})}
+                          onChange={e => setNewCategory({...newCategory, previewType: e.target.value as 'rectangle' | 'circle' | 'square' | 'template'})}
                         >
                           <option value="rectangle">Rectangle (Étiquette/Ruban)</option>
                           <option value="circle">Cercle (Bouton)</option>
