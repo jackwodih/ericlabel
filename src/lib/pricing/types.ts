@@ -1,4 +1,17 @@
-export type ProductType = 'label' | 'packaging' | 'button' | 'accessory';
+export interface ProductCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  pricingModel: 'surface' | 'unit' | 'volume';
+  previewType: 'rectangle' | 'circle' | 'square' | 'template';
+  icon?: string; // Nom de l'icône Lucide
+  active: boolean;
+  createdAt: Date;
+  order: number;
+}
+
+export type ProductType = string;
 
 export interface PricingInput {
   productType: ProductType;

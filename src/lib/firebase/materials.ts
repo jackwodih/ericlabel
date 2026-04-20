@@ -15,6 +15,7 @@ export interface Material {
   id?: string;
   name: string;
   description: string;
+  categoryId?: string; // Lien vers la catégorie dynamique
   productType: ProductType;
   pricingModel: 'surface' | 'unit' | 'volume';
   basePrice: number;
@@ -31,6 +32,9 @@ export interface Material {
   quantityBreaks?: PricingRule['quantityBreaks'];
   taxRate?: number;
   minimumPrice?: number;
+  shape?: 'rectangle' | 'rounded' | 'circle' | 'oval' | 'square';
+  defaultWidth?: number;
+  defaultHeight?: number;
 }
 
 const COLLECTION_NAME = 'materials';
@@ -51,6 +55,18 @@ export const materialService = {
         pricingModel: data.pricingModel || 'surface',
       };
     }) as Material[];
+  },
+
+  // Récupérer les matériaux par catégorie
+  async getByCategory(categoryId: string) {
+    if (!db) return [];
+    const q = query(
+      collection(db, COLLECTION_NAME), 
+      where('active', '==', true),
+      where('categoryId', '==', categoryId)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Material[];
   },
 
   // Ajouter un nouveau matériau

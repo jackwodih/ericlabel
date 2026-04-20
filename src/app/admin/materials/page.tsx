@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { LogoUpload } from '@/components/designer/LogoUpload';
 import { materialService, Material } from '@/lib/firebase/materials';
+import { categoryService } from '@/lib/firebase/categories';
+import { ProductCategory } from '@/lib/pricing/types';
 import { 
   Plus, 
   Settings2, 
@@ -17,7 +19,11 @@ import {
   AlertCircle,
   Loader2,
   Trash,
-  Save
+  Save,
+  Shapes,
+  Type,
+  Square,
+  Circle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -31,6 +37,7 @@ export default function AdminMaterialsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [categories, setCategories] = useState<ProductCategory[]>([]);
   
   const initialMaterial: Material = {
     name: '',
@@ -41,11 +48,13 @@ export default function AdminMaterialsPage() {
     pricePerSqCm: 50,
     pricePerUnit: 0,
     pricePerCm3: 0,
-    color1: '#f97316',
     color2: '#9a3412',
     techniques: ['print'],
     active: true,
-    textureUrl: ''
+    textureUrl: '',
+    shape: 'rectangle',
+    defaultWidth: 6,
+    defaultHeight: 2
   };
 
   const [newMaterial, setNewMaterial] = useState<Material>(initialMaterial);
@@ -72,7 +81,13 @@ export default function AdminMaterialsPage() {
 
   useEffect(() => {
     loadMaterials();
+    loadCategories();
   }, []);
+
+  const loadCategories = async () => {
+    const data = await categoryService.getAll();
+    setCategories(data);
+  };
 
   const loadMaterials = async () => {
     try {
@@ -141,22 +156,32 @@ export default function AdminMaterialsPage() {
             </h1>
           </div>
           
-          <Button 
-            size="lg"
-            className="shadow-xl shadow-orange-600/10"
-            icon={isAdding ? <ChevronLeft /> : <Plus />} 
-            onClick={() => {
-              if (isAdding) {
-                setIsAdding(false);
-                setEditingId(null);
-                setNewMaterial(initialMaterial);
-              } else {
-                setIsAdding(true);
-              }
-            }}
-          >
-            {isAdding ? 'Retour à la liste' : 'Nouveau Matériau'}
-          </Button>
+          <div className="flex flex-wrap gap-4">
+            <Button 
+                variant="outline" 
+                size="lg"
+                onClick={() => router.push('/admin/categories')}
+                icon={<Shapes className="w-5 h-5" />}
+            >
+                Gérer les Univers
+            </Button>
+            <Button 
+                size="lg"
+                className="shadow-xl shadow-orange-600/10"
+                icon={isAdding ? <ChevronLeft /> : <Plus />} 
+                onClick={() => {
+                if (isAdding) {
+                    setIsAdding(false);
+                    setEditingId(null);
+                    setNewMaterial(initialMaterial);
+                } else {
+                    setIsAdding(true);
+                }
+                }}
+            >
+                {isAdding ? 'Retour à la liste' : 'Nouveau Matériau'}
+            </Button>
+          </div>
         </div>
 
         <AnimatePresence mode="wait">
@@ -200,29 +225,63 @@ export default function AdminMaterialsPage() {
                         </div>
                         <div className="grid md:grid-cols-2 gap-6 md:col-span-2">
                           <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-400">Type de Produit</label>
+                            <label className="block text-sm font-medium text-gray-400">Univers du Produit</label>
                             <select 
                               className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
-                              value={newMaterial.productType}
-                              onChange={e => setNewMaterial({...newMaterial, productType: e.target.value as 'label' | 'packaging' | 'button' | 'accessory'})}
+                              value={newMaterial.categoryId}
+                              onChange={e => {
+                                const cat = categories.find(c => c.id === e.target.value);
+                                setNewMaterial({
+                                  ...newMaterial, 
+                                  categoryId: e.target.value,
+                                  productType: cat?.slug || 'generic',
+                                  pricingModel: cat?.pricingModel || 'surface'
+                                });
+                              }}
                             >
-                              <option value="label">Étiquette / Ruban</option>
-                              <option value="button">Bouton</option>
-                              <option value="packaging">Emballage / Boîte</option>
-                              <option value="accessory">Accessoire</option>
+                              <option value="">Sélectionner un univers...</option>
+                              {categories.map(cat => (
+                                <option key={cat.id} value={cat.id}>{cat.name}</option>
+                              ))}
                             </select>
+                            {categories.length === 0 && (
+                                <p className="text-[10px] text-orange-400 italic">Aucun univers trouvé. Créez-en un d'abord.</p>
+                            )}
                           </div>
-                          <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-400">Modèle de Tarification</label>
-                            <select 
-                              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
-                              value={newMaterial.pricingModel}
-                              onChange={e => setNewMaterial({...newMaterial, pricingModel: e.target.value as 'surface' | 'unit' | 'volume'})}
-                            >
-                              <option value="surface">Par Surface (cm²)</option>
-                              <option value="unit">Par Unité (Pièce)</option>
-                              <option value="volume">Par Volume (cm³)</option>
-                            </select>
+                          <div className="space-y-2 opacity-50">
+                            <label className="block text-sm font-medium text-gray-400">Modèle de Tarification (Auto)</label>
+                            <Input 
+                                value={newMaterial.pricingModel.toUpperCase()}
+                                disabled
+                            />
+                          </div>
+                        </div>
+
+                        {/* Shape Selection */}
+                        <div className="md:col-span-2 space-y-4 pt-4 border-t border-white/5">
+                          <label className="block text-sm font-medium text-gray-400">Forme finale du produit</label>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {[
+                              { id: 'rectangle', label: 'Rectangle', icon: <Square className="w-5 h-5" /> },
+                              { id: 'rounded', label: 'Arrondi', icon: <div className="w-5 h-5 border-2 border-current rounded-sm" /> },
+                              { id: 'circle', label: 'Cercle', icon: <Circle className="w-5 h-5" /> },
+                              { id: 'square', label: 'Carré', icon: <div className="w-5 h-5 border-2 border-current" /> },
+                              { id: 'oval', label: 'Ovale', icon: <div className="w-6 h-4 border-2 border-current rounded-full" /> }
+                            ].map((s) => (
+                              <button
+                                key={s.id}
+                                type="button"
+                                onClick={() => setNewMaterial({...newMaterial, shape: s.id as any})}
+                                className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                                  newMaterial.shape === s.id 
+                                    ? 'border-orange-500 bg-orange-500/10 text-orange-500' 
+                                    : 'border-white/5 bg-white/5 text-gray-400 hover:border-white/10'
+                                }`}
+                              >
+                                {s.icon}
+                                <span className="text-xs font-bold">{s.label}</span>
+                              </button>
+                            ))}
                           </div>
                         </div>
 
@@ -310,6 +369,42 @@ export default function AdminMaterialsPage() {
                             value={newMaterial.textureUrl}
                           />
                         </div>
+
+                        {/* Default Dimensions */}
+                        <div className="md:col-span-2 grid grid-cols-2 gap-6 p-4 bg-white/5 rounded-xl border border-white/5 mt-4">
+                          <div className="space-y-2">
+                             <label className="block text-sm font-medium text-gray-400">
+                               {(newMaterial.shape === 'circle' || newMaterial.shape === 'square') ? 'Côté / Diamètre (cm)' : 'Largeur standard (cm)'}
+                             </label>
+                             <input 
+                                type="number"
+                                className="w-full bg-slate-900 border border-white/10 rounded-lg px-4 py-2 text-white outline-none focus:border-orange-500 transition-colors"
+                                value={newMaterial.defaultWidth || ''}
+                                onChange={e => {
+                                  const val = e.target.value === '' ? 0 : Number(e.target.value);
+                                  setNewMaterial({
+                                    ...newMaterial, 
+                                    defaultWidth: val,
+                                    defaultHeight: (newMaterial.shape === 'circle' || newMaterial.shape === 'square') ? val : newMaterial.defaultHeight
+                                  });
+                                }}
+                             />
+                          </div>
+                          {!(newMaterial.shape === 'circle' || newMaterial.shape === 'square') && (
+                            <div className="space-y-2">
+                              <label className="block text-sm font-medium text-gray-400">Hauteur standard (cm)</label>
+                              <input 
+                                 type="number"
+                                 className="w-full bg-slate-900 border border-white/10 rounded-lg px-4 py-2 text-white outline-none focus:border-orange-500 transition-colors"
+                                 value={newMaterial.defaultHeight || ''}
+                                 onChange={e => setNewMaterial({...newMaterial, defaultHeight: e.target.value === '' ? 0 : Number(e.target.value)})}
+                              />
+                            </div>
+                          )}
+                          <p className="md:col-span-2 text-[10px] text-gray-500 italic">
+                            Ces dimensions seront utilisées par défaut dans le designer pour ce matériau.
+                          </p>
+                        </div>
                       </div>
                     </section>
 
@@ -359,10 +454,29 @@ export default function AdminMaterialsPage() {
                       )}
                       
                       {/* Decorative Label Rendering */}
-                      <div className="relative z-10 w-full aspect-[3/1] bg-white/10 backdrop-blur-sm border border-white/20 rounded shadow-2xl flex items-center justify-center overflow-hidden">
+                      <div 
+                        className={`relative z-10 bg-white/10 backdrop-blur-sm border border-white/20 shadow-2xl flex items-center justify-center overflow-hidden transition-all duration-500 ${
+                          newMaterial.shape === 'circle' ? 'rounded-full' :
+                          newMaterial.shape === 'oval' ? 'rounded-full' :
+                          newMaterial.shape === 'rounded' ? 'rounded-2xl' :
+                          newMaterial.shape === 'square' ? 'rounded-none' :
+                          'rounded-none'
+                        }`}
+                        style={{
+                          width: (newMaterial.defaultWidth || 1) * 40,
+                          height: (newMaterial.defaultHeight || 1) * 40
+                        }}
+                      >
                         <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
-                        <span className="relative z-10 font-bold tracking-[0.3em] text-white text-lg drop-shadow-lg">
-                          {newMaterial.name || 'NOM DU MATÉRIAU'}
+                        <span 
+                          className="relative z-10 font-bold tracking-widest text-white text-center px-2 break-words"
+                          style={{ 
+                            fontSize: (newMaterial.shape === 'circle' || newMaterial.shape === 'square')
+                              ? Math.min((newMaterial.defaultHeight || 1) * 6, (newMaterial.defaultWidth || 1) * 6)
+                              : Math.min((newMaterial.defaultHeight || 1) * 8, (newMaterial.defaultWidth || 1) * 4)
+                          }}
+                        >
+                          {newMaterial.name || 'APERÇU'}
                         </span>
                       </div>
                     </div>
@@ -421,18 +535,30 @@ export default function AdminMaterialsPage() {
                         className="h-48 relative overflow-hidden flex items-center justify-center"
                         style={{ background: `linear-gradient(to bottom right, ${m.color1}, ${m.color2})` }}
                       >
-                         {m.textureUrl && (
-                          <div 
-                            className="absolute inset-0 opacity-40 mix-blend-overlay"
-                            style={{ 
-                              backgroundImage: `url(${m.textureUrl})`,
-                              backgroundSize: 'cover'
-                            }}
-                          />
-                        )}
-                        <div className="relative z-10 w-2/3 aspect-[3/1] bg-white/10 border border-white/20 rounded flex items-center justify-center font-bold tracking-[0.2em] text-xs shadow-2xl">
-                          {m.name}
-                        </div>
+                         <div className={`relative bg-white/10 backdrop-blur-sm border border-white/20 shadow-xl flex items-center justify-center overflow-hidden ${
+                            m.shape === 'circle' ? 'rounded-full' :
+                            m.shape === 'oval' ? 'rounded-full' :
+                            m.shape === 'rounded' ? 'rounded-xl' :
+                            m.shape === 'square' ? 'rounded-none' :
+                            'rounded-none'
+                         }`}
+                         style={{ 
+                            width: (m.defaultWidth || 1) * 10,
+                            height: (m.defaultHeight || 1) * 10
+                         }}>
+                           {/* Texture inside the shape */}
+                           {m.textureUrl && (
+                             <div 
+                               className="absolute inset-0 opacity-40 mix-blend-overlay"
+                               style={{ 
+                                 backgroundImage: `url(${m.textureUrl})`,
+                                 backgroundSize: 'cover'
+                               }}
+                             />
+                           )}
+                           <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+                           <span className="relative z-10 text-[10px] font-bold text-white/50 tracking-widest text-center px-2">{m.name}</span>
+                         </div>
                         <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-transparent transition-all duration-500" />
                         
                         {/* Action Floatings */}

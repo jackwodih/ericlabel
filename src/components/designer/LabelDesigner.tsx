@@ -23,16 +23,18 @@ import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { LogoUpload } from './LogoUpload';
 import { calculatePrice, getDefaultRule } from '@/lib/pricing/calculator';
-import { PricingInput, PricingResult, PricingRule } from '@/lib/pricing/types';
+import { PricingInput, PricingResult, PricingRule, ProductCategory } from '@/lib/pricing/types';
 import { useCartStore } from '@/store/cartStore';
 import { db } from '@/lib/firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { categoryService } from '@/lib/firebase/categories';
 import { materialService, Material } from '@/lib/firebase/materials';
 
 // Hardcoded materials removed, now fetching from Firebase
 
 export function LabelDesigner() {
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [loadingMaterials, setLoadingMaterials] = useState(true);
   const [activeStep, setActiveStep] = useState(1);
   const [config, setConfig] = useState<PricingInput>({
@@ -63,23 +65,30 @@ export function LabelDesigner() {
   useEffect(() => {
     const fetchMaterials = async () => {
       try {
-        const data = await materialService.getAll();
-        setMaterials(data);
-        if (data.length > 0) {
-          // Si un paramètre material existe, on cherche le matériel correspondant
+        const [mats, cats] = await Promise.all([
+          materialService.getAll(),
+          categoryService.getAll()
+        ]);
+        
+        setMaterials(mats);
+        setCategories(cats);
+
+        if (mats.length > 0) {
           const preSelected = materialParam 
-            ? data.find(m => m.name.toLowerCase().replace(/\s+/g, '-') === materialParam)
+            ? mats.find(m => m.name.toLowerCase().replace(/\s+/g, '-') === materialParam)
             : null;
           
-          const selected = preSelected || data[0];
+          const selected = preSelected || mats[0];
           setConfig(prev => ({ 
             ...prev, 
             material: selected.id!,
-            productType: selected.productType 
+            productType: selected.productType,
+            width: selected.defaultWidth || prev.width,
+            height: selected.defaultHeight || prev.height
           }));
         }
       } catch (error) {
-        console.error('Error fetching materials:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoadingMaterials(false);
       }
@@ -87,9 +96,11 @@ export function LabelDesigner() {
     fetchMaterials();
   }, [materialParam]);
 
+  const selectedMaterial = materials.find(m => m.id === config.material) || null;
+  const selectedCategory = categories.find(c => c.id === selectedMaterial?.categoryId) || null;
+
   useEffect(() => {
     if (config.material) {
-      const selectedMaterial = materials.find(m => m.id === config.material);
       if (selectedMaterial) {
         setMaterialColor(selectedMaterial.color1);
         setPricing(calculatePrice(config, selectedMaterial as unknown as PricingRule));
@@ -97,9 +108,7 @@ export function LabelDesigner() {
         setPricing(calculatePrice(config, getDefaultRule('similicuir')));
       }
     }
-  }, [config, materials]);
-
-  const selectedMaterial = materials.find(m => m.id === config.material);
+  }, [config, materials, selectedMaterial]);
 
   const handleAddToCart = async () => {
     if (!pricing) return;
@@ -184,9 +193,15 @@ export function LabelDesigner() {
             {/* Realtime Preview Rendering */}
             <motion.div
               layoutId="label-preview"
-              className={`relative shadow-2xl overflow-hidden rounded-sm flex items-center justify-center`}
+              className={`relative shadow-2xl overflow-hidden flex items-center justify-center transition-all duration-500 ${
+                selectedMaterial?.shape === 'circle' ? 'rounded-full aspect-square' :
+                selectedMaterial?.shape === 'oval' ? 'rounded-full' :
+                selectedMaterial?.shape === 'rounded' ? 'rounded-lg' :
+                selectedMaterial?.shape === 'square' ? 'rounded-none opacity-90' :
+                'rounded-sm'
+              }`}
               style={{
-                width: (config.width ?? 0) * 40,
+                width: (selectedMaterial?.shape === 'circle' || selectedMaterial?.shape === 'square') ? (config.height ?? 0) * 40 : (config.width ?? 0) * 40,
                 height: (config.height ?? 0) * 40,
                 backgroundColor: materialColor
               }}
@@ -213,8 +228,13 @@ export function LabelDesigner() {
                   </div>
                 )}
                 <span 
-                  className={`relative z-10 font-bold tracking-widest text-center ${fontFamily}`}
-                  style={{ color, fontSize: Math.min((config.height ?? 0) * 10, (config.width ?? 0) * 5) }}
+                  className={`relative z-10 font-bold tracking-widest text-center px-2 ${fontFamily}`}
+                  style={{ 
+                    color, 
+                    fontSize: (selectedMaterial?.shape === 'circle' || selectedMaterial?.shape === 'square')
+                      ? Math.min((config.height ?? 0) * 7, (config.width ?? 0) * 4) 
+                      : Math.min((config.height ?? 0) * 10, (config.width ?? 0) * 5) 
+                  }}
                 >
                   {text || 'VOTRE NOM'}
                 </span>
@@ -223,7 +243,9 @@ export function LabelDesigner() {
             {/* Scale indicator */}
             <div className="absolute bottom-4 right-4 flex items-center gap-2 text-white/50 text-xs">
               <Maximize2 className="w-4 h-4" />
-              {config.width}cm x {config.height}cm
+              {selectedMaterial?.shape === 'circle' ? `Diamètre: ${config.height}cm` : 
+               selectedMaterial?.shape === 'square' ? `Côté: ${config.height}cm` :
+               `${config.width}cm x ${config.height}cm`}
             </div>
           </Card>
 
@@ -315,7 +337,13 @@ export function LabelDesigner() {
                       materials.map((m) => (
                         <button
                           key={m.id}
-                          onClick={() => setConfig({ ...config, material: m.id!, productType: m.productType })}
+                          onClick={() => setConfig({ 
+                            ...config, 
+                            material: m.id!, 
+                            productType: m.productType,
+                            width: m.defaultWidth || config.width,
+                            height: m.defaultHeight || config.height
+                          })}
                           className={`p-4 rounded-xl text-left transition-all border ${
                             config.material === m.id 
                               ? 'bg-white/10 border-orange-500 shadow-[0_0_15px_rgba(234,88,12,0.3)]' 
@@ -374,22 +402,24 @@ export function LabelDesigner() {
                     <Type className="w-5 h-5 text-orange-500" />
                     Dimensions & Texte
                   </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input 
-                      label="Largeur (cm)" 
-                      type="number" 
-                      className="bg-white/5 border-white/10 text-white"
-                      value={config.width}
-                      onChange={(e) => setConfig({ ...config, width: Math.max(1, Number(e.target.value)) })}
-                    />
-                    <Input 
-                      label="Hauteur (cm)" 
-                      type="number" 
-                      className="bg-white/5 border-white/10 text-white"
-                      value={config.height}
-                      onChange={(e) => setConfig({ ...config, height: Math.max(1, Number(e.target.value)) })}
-                    />
-                  </div>
+                  {selectedCategory?.pricingModel !== 'unit' && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <Input 
+                        label="Largeur (cm)" 
+                        type="number" 
+                        className="bg-white/5 border-white/10 text-white"
+                        value={config.width}
+                        onChange={(e) => setConfig({ ...config, width: Math.max(1, Number(e.target.value)) })}
+                      />
+                      <Input 
+                        label="Hauteur (cm)" 
+                        type="number" 
+                        className="bg-white/5 border-white/10 text-white"
+                        value={config.height}
+                        onChange={(e) => setConfig({ ...config, height: Math.max(1, Number(e.target.value)) })}
+                      />
+                    </div>
+                  )}
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
                       <Palette className="w-4 h-4" /> Couleur du matériau (Cuir/Tissu)
