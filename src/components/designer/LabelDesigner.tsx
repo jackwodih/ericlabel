@@ -14,6 +14,8 @@ import {
   ChevronRight, 
   Info,
   Check,
+  Plus,
+  Minus,
   UploadCloud,
   Loader2
 } from 'lucide-react';
@@ -136,13 +138,20 @@ export function LabelDesigner() {
       };
 
       // Save to Firebase (nothing hardcoded, uses db config)
+      // Construction d'un nom d'article plus explicite
+      const categoryName = categories.find(c => c.id === selectedMaterial?.categoryId)?.name || 'Article';
+      const variantName = selectedMaterial?.variants?.find(v => v.id === config.variantId)?.name;
+      const itemName = `${selectedMaterial?.name || 'Matière'} ${variantName ? `(${variantName})` : ''} - ${text || 'Sans texte'}`;
+
       if (db) {
         const docRef = await addDoc(collection(db, 'designs'), designData);
         addItem({
           id: `label-${docRef.id}`,
           productId: `prod-${config.material}`,
-          name: `Étiquette ${config.material}`,
+          name: itemName,
+          categoryName: categoryName,
           material: config.material,
+          variantName: variantName,
           quantity: config.quantity,
           unitPrice: pricing.total / config.quantity,
           totalPrice: pricing.total,
@@ -160,12 +169,13 @@ export function LabelDesigner() {
           }
         });
       } else {
-        // Local only add if db is missing (should not happen in browser)
         addItem({
           id: `label-temp-${Date.now()}`,
           productId: `prod-${config.material}`,
-          name: `Étiquette ${config.material}`,
+          name: itemName,
+          categoryName: categoryName,
           material: config.material,
+          variantName: variantName,
           quantity: config.quantity,
           unitPrice: pricing.total / config.quantity,
           totalPrice: pricing.total,
@@ -693,20 +703,36 @@ export function LabelDesigner() {
                     
                     <div className="space-y-4">
                       <label className="block text-sm font-medium text-gray-400">Quantité de Commande</label>
-                      <input 
-                        type="range" 
-                        min="50" 
-                        max="1000" 
-                        step="50"
-                        className="w-full accent-orange-600"
-                        value={config.quantity}
-                        onChange={(e) => setConfig({ ...config, quantity: Number(e.target.value) })}
-                      />
-                      <div className="flex justify-between text-xs text-gray-500 pt-1 font-mono">
-                        <span>50 pcs</span>
-                        <span className="text-orange-500 font-bold">{config.quantity} pcs</span>
-                        <span>1000 pcs</span>
+                      <div className="flex items-center gap-4">
+                        <div className="flex-1 relative">
+                          <input 
+                            type="number" 
+                            min="1" 
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-xl font-black text-orange-500 outline-none focus:border-orange-500 transition-all"
+                            value={config.quantity || ''}
+                            onChange={(e) => {
+                              const val = e.target.value === '' ? 0 : Number(e.target.value);
+                              setConfig({ ...config, quantity: val });
+                            }}
+                          />
+                          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-500 uppercase tracking-widest">Pièces</span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <button 
+                            onClick={() => setConfig({ ...config, quantity: config.quantity + 50 })}
+                            className="p-2 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 text-gray-400"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => setConfig({ ...config, quantity: Math.max(10, config.quantity - 50) })}
+                            className="p-2 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 text-gray-400"
+                          >
+                            <Minus className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
+                      <p className="text-[10px] text-gray-500 italic mt-2">Saisissez la quantité exacte dont vous avez besoin.</p>
                     </div>
 
                     {selectedMaterial?.discounts && selectedMaterial.discounts.length > 0 && (

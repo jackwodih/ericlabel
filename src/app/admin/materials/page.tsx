@@ -23,7 +23,8 @@ import {
   Shapes,
   Square,
   Circle,
-  Layers
+  Layers,
+  Truck
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -165,6 +166,15 @@ export default function AdminMaterialsPage() {
                 icon={<Shapes className="w-5 h-5" />}
             >
                 Gérer les Univers
+            </Button>
+            <Button 
+                variant="outline" 
+                size="lg"
+                className="border-orange-500/20 text-orange-500 hover:bg-orange-500/5"
+                onClick={() => router.push('/admin/shipping')}
+                icon={<Truck className="w-5 h-5" />}
+            >
+                Logistique
             </Button>
             <Button 
                 size="lg"
@@ -602,10 +612,11 @@ export default function AdminMaterialsPage() {
                                     <input 
                                       type="number"
                                       className="w-full bg-slate-900 border border-white/10 rounded px-3 py-1 text-sm outline-none focus:border-orange-500"
-                                      value={tier.quantity}
+                                      value={tier.quantity || ''}
                                       onChange={e => {
+                                        const val = e.target.value === '' ? 0 : Number(e.target.value);
                                         const updated = [...(newMaterial.discounts || [])];
-                                        updated[idx].quantity = Number(e.target.value);
+                                        updated[idx].quantity = val;
                                         setNewMaterial({...newMaterial, discounts: updated});
                                       }}
                                     />
@@ -616,10 +627,11 @@ export default function AdminMaterialsPage() {
                                       <input 
                                         type="number"
                                         className="w-full bg-slate-900 border border-white/10 rounded px-3 py-1 text-sm outline-none focus:border-orange-500 pr-6"
-                                        value={tier.discountPercentage}
+                                        value={tier.discountPercentage || ''}
                                         onChange={e => {
+                                          const val = e.target.value === '' ? 0 : Number(e.target.value);
                                           const updated = [...(newMaterial.discounts || [])];
-                                          updated[idx].discountPercentage = Number(e.target.value);
+                                          updated[idx].discountPercentage = val;
                                           setNewMaterial({...newMaterial, discounts: updated});
                                         }}
                                       />
@@ -714,12 +726,26 @@ export default function AdminMaterialsPage() {
                         {newMaterial.description || 'Apportez une touche de prestige à votre collection avec cette matière haut de gamme.'}
                       </p>
                       <div className="flex justify-between items-end border-t border-white/5 pt-4">
-                         <div>
-                           <p className="text-[10px] text-gray-500 uppercase font-bold">Prix indicatif (5*2cm)</p>
-                           <p className="text-lg font-black text-orange-500">
-                             {Math.round(newMaterial.basePrice + (10 * (newMaterial.pricePerSqCm ?? 0)))} FCFA
-                           </p>
-                         </div>
+                          <div>
+                            <p className="text-[10px] text-gray-500 uppercase font-bold">
+                              Prix unitaire indicatif ({
+                                (newMaterial.shape === 'circle' || newMaterial.shape === 'square') 
+                                  ? `${newMaterial.defaultWidth}cm`
+                                  : `${newMaterial.defaultWidth}*${newMaterial.defaultHeight}cm`
+                              })
+                            </p>
+                            <p className="text-lg font-black text-orange-500">
+                              {Math.round(
+                                newMaterial.basePrice + (
+                                  newMaterial.pricingModel === 'surface' 
+                                    ? ((newMaterial.defaultWidth || 1) * (newMaterial.defaultHeight || 1) * (newMaterial.pricePerSqCm || 0))
+                                    : newMaterial.pricingModel === 'unit'
+                                      ? (newMaterial.pricePerUnit || 0)
+                                      : 0
+                                )
+                              )} FCFA
+                            </p>
+                          </div>
                          <div className="text-right">
                            {newMaterial.textureUrl ? (
                              <span className="text-[10px] bg-green-500/20 text-green-500 px-2 py-1 rounded-full font-bold">TEXTURE ACTIVE</span>

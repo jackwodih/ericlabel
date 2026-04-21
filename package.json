@@ -20,6 +20,8 @@
     "firebase-admin": "^13.6.0",
     "framer-motion": "^12.23.26",
     "gsap": "^3.14.1",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.560.0",
     "nanoid": "^5.1.6",
     "next": "14.2.33",
