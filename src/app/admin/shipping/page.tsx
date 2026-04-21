@@ -142,6 +142,7 @@ export default function AdminShippingPage() {
                     <div className="w-32 h-32">
                         <LogoUpload 
                             onUpload={(url) => setGlobalSettings({...globalSettings, logoUrl: url})} 
+                            onRemove={() => setGlobalSettings({...globalSettings, logoUrl: ''})}
                             value={globalSettings.logoUrl}
                         />
                     </div>
