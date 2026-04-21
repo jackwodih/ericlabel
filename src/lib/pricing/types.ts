@@ -65,7 +65,7 @@ export interface PricingResult {
   }[];
 }
 
-import { MaterialVariant } from '../firebase/materials';
+import { MaterialVariant, DiscountTier } from '../firebase/materials';
 
 export interface PricingRule {
   id: string;
@@ -99,6 +99,7 @@ export interface PricingRule {
     preview3D?: number;
   };
   variants?: MaterialVariant[];
+  discounts?: DiscountTier[];
   taxRate: number;
   active: boolean;
 }

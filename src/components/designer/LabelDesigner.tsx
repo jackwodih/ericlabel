@@ -709,17 +709,32 @@ export function LabelDesigner() {
                       </div>
                     </div>
 
-                    <div className="mt-6 p-4 bg-orange-600/10 border border-orange-500/20 rounded-xl">
-                      <div className="flex items-start gap-3">
-                        <Info className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-sm text-gray-300">
-                            <b>Saviez-vous ?</b><br />
-                            À partir de 500 pièces, vous bénéficiez de <b>-35%</b> sur le prix unitaire.
-                          </p>
+                    {selectedMaterial?.discounts && selectedMaterial.discounts.length > 0 && (
+                      <div className="mt-6 space-y-3">
+                        <p className="text-[10px] font-bold text-orange-500 uppercase tracking-widest">Prix dégressifs</p>
+                        <div className="grid grid-cols-1 gap-2">
+                          {selectedMaterial.discounts.sort((a,b) => a.quantity - b.quantity).map((tier, idx) => {
+                            const isReached = config.quantity >= tier.quantity;
+                            return (
+                              <div 
+                                key={idx} 
+                                className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
+                                  isReached 
+                                    ? 'bg-green-500/10 border-green-500/30 text-green-400' 
+                                    : 'bg-white/5 border-white/10 text-gray-400'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <div className={`w-1.5 h-1.5 rounded-full ${isReached ? 'bg-green-500 animate-pulse' : 'bg-gray-600'}`} />
+                                  <span className="text-xs font-bold">Dès {tier.quantity} pièces</span>
+                                </div>
+                                <span className="text-xs font-black">-{tier.discountPercentage}%</span>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 

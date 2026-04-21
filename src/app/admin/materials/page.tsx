@@ -548,6 +548,92 @@ export default function AdminMaterialsPage() {
                       </div>
                     </section>
 
+                    {/* Discounts Section */}
+                    <section className="space-y-6 pt-6 border-t border-white/5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 text-xl font-bold">
+                          <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-500">
+                            <Sparkles className="w-4 h-4" />
+                          </div>
+                          Paliers de remise
+                        </div>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            const newTier = {
+                              quantity: 100,
+                              discountPercentage: 10
+                            };
+                            setNewMaterial({
+                              ...newMaterial,
+                              discounts: [...(newMaterial.discounts || []), newTier]
+                            });
+                          }}
+                          icon={<Plus className="w-4 h-4" />}
+                        >
+                          Ajouter un palier
+                        </Button>
+                      </div>
+
+                      <div className="space-y-4">
+                        {(!newMaterial.discounts || newMaterial.discounts.length === 0) ? (
+                          <div className="text-center py-8 bg-white/5 rounded-xl border border-dashed border-white/10">
+                            <p className="text-gray-500 text-sm">Aucune remise définie pour le volume.</p>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {newMaterial.discounts.map((tier, idx) => (
+                              <div key={idx} className="bg-white/5 border border-white/10 rounded-xl p-4 relative group">
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    const updated = newMaterial.discounts?.filter((_, i) => i !== idx);
+                                    setNewMaterial({...newMaterial, discounts: updated});
+                                  }}
+                                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                >
+                                  <Trash className="w-3 h-3" />
+                                </button>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="space-y-1">
+                                    <label className="text-[10px] text-gray-500 uppercase font-bold">Quantité Min</label>
+                                    <input 
+                                      type="number"
+                                      className="w-full bg-slate-900 border border-white/10 rounded px-3 py-1 text-sm outline-none focus:border-orange-500"
+                                      value={tier.quantity}
+                                      onChange={e => {
+                                        const updated = [...(newMaterial.discounts || [])];
+                                        updated[idx].quantity = Number(e.target.value);
+                                        setNewMaterial({...newMaterial, discounts: updated});
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="space-y-1">
+                                    <label className="text-[10px] text-gray-500 uppercase font-bold">Remise (%)</label>
+                                    <div className="relative">
+                                      <input 
+                                        type="number"
+                                        className="w-full bg-slate-900 border border-white/10 rounded px-3 py-1 text-sm outline-none focus:border-orange-500 pr-6"
+                                        value={tier.discountPercentage}
+                                        onChange={e => {
+                                          const updated = [...(newMaterial.discounts || [])];
+                                          updated[idx].discountPercentage = Number(e.target.value);
+                                          setNewMaterial({...newMaterial, discounts: updated});
+                                        }}
+                                      />
+                                      <span className="absolute right-2 top-1.5 text-xs text-gray-500">%</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </section>
+
                     <div className="pt-6 border-t border-white/5 flex flex-col sm:flex-row gap-4 items-center justify-between">
                       <div className="flex items-center gap-2 text-gray-500 text-xs">
                         <AlertCircle className="w-4 h-4" />

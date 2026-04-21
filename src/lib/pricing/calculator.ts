@@ -128,15 +128,23 @@ export const calculatePrice = (input: PricingInput, baseRule: PricingRule): Pric
     }
   }
 
-  // 3. Sous-total et Remises sur quantité
+  // 3. Sous-total et Remises par paliers
   const subtotalBeforeDiscount = (basePrice + materialPrice + optionsPrice) * input.quantity;
   
   let discount = 0;
-  const quantityBreaks = rule.quantityBreaks || [];
-  const qBreak = quantityBreaks.find(b => input.quantity >= b.min && input.quantity <= b.max);
-  if (qBreak) {
-    discount = subtotalBeforeDiscount * qBreak.discount;
-    breakdown.push({ label: `Remise quantité (${qBreak.discount * 100}%)`, amount: -discount });
+  let discountLabel = '';
+
+  if (rule.discounts && rule.discounts.length > 0) {
+    // Trouver le palier le plus haut atteint
+    const eligibleTier = [...rule.discounts]
+      .sort((a, b) => b.quantity - a.quantity)
+      .find(tier => input.quantity >= tier.quantity);
+
+    if (eligibleTier) {
+      discount = subtotalBeforeDiscount * (eligibleTier.discountPercentage / 100);
+      discountLabel = `Remise volume (${eligibleTier.discountPercentage}%)`;
+      breakdown.push({ label: discountLabel, amount: -discount });
+    }
   }
 
   const subtotal = subtotalBeforeDiscount - discount;

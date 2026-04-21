@@ -36,6 +36,12 @@ export interface Material {
   defaultWidth?: number;
   defaultHeight?: number;
   variants?: MaterialVariant[];
+  discounts?: DiscountTier[];
+}
+
+export interface DiscountTier {
+  quantity: number;
+  discountPercentage: number;
 }
 
 export interface MaterialVariant {
