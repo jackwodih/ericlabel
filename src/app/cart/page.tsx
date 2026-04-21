@@ -168,8 +168,8 @@ export default function CartPage() {
     });
 
     // --- RÉCAPITULATIF FINANCIER ---
-    // @ts-ignore - lastAutoTable est ajouté dynamiquement par jspdf-autotable
-    const lastAutoTable = (doc as any).lastAutoTable; 
+    // @ts-expect-error - lastAutoTable est injecté par le plugin autotable
+    const lastAutoTable = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable; 
     let finalY = (lastAutoTable?.finalY || 100) + 15;
     const summaryXLabel = 105; // Décalé de 130 à 105 pour éviter les chevauchements
     const summaryXValue = 200;
