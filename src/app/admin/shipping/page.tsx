@@ -106,8 +106,10 @@ export default function AdminShippingPage() {
     try {
         const data = await settingsService.getSettings();
         alert("Données trouvées sur le serveur : \n" + JSON.stringify(data, null, 2));
-    } catch (e: any) {
-        alert("Erreur de lecture serveur : " + e.message);
+    } catch (e: unknown) {
+        console.error(e);
+        const errMsg = e instanceof Error ? e.message : 'Détails inconnus';
+        alert("Erreur de lecture serveur : " + errMsg);
     }
   };
 

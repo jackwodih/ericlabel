@@ -16,10 +16,7 @@ import {
   Plus,
   Minus,
   UploadCloud,
-  Loader2,
-  FileText,
-  Clock,
-  CheckCircle2
+  Loader2
 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';

@@ -168,7 +168,8 @@ export default function CartPage() {
     });
 
     // --- RÉCAPITULATIF FINANCIER ---
-    const lastAutoTable = (doc as any).lastAutoTable; // Je garde as any ici si c'est la seule façon d'accéder à la propriété dynamique de jspdf-autotable
+    // @ts-ignore - lastAutoTable est ajouté dynamiquement par jspdf-autotable
+    const lastAutoTable = (doc as any).lastAutoTable; 
     let finalY = (lastAutoTable?.finalY || 100) + 15;
     const summaryXLabel = 105; // Décalé de 130 à 105 pour éviter les chevauchements
     const summaryXValue = 200;
@@ -316,13 +317,13 @@ export default function CartPage() {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 mb-1">
                                 <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-orange-500/10 text-orange-500 border border-orange-500/20">
-                                    {(item as any).categoryName || 'Article'}
+                                    {(item as unknown as { categoryName?: string }).categoryName || 'Article'}
                                 </span>
                                 <span className="text-[10px] text-gray-600 font-mono text-xs">Identifiant unique: {item.id.slice(-12)}</span>
                             </div>
                             <h3 className="text-xl font-bold text-white truncate max-w-full">{item.name}</h3>
                             <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-gray-500 shadow-xl bg-white/5 p-2 rounded-lg">
-                              <span className="flex items-center gap-1"><Layers className="w-3.5 h-3.5" /> {(item as any).variantName || item.material}</span>
+                              <span className="flex items-center gap-1"><Layers className="w-3.5 h-3.5" /> {(item as unknown as { variantName?: string }).variantName || item.material}</span>
                               <span className="flex items-center gap-1"><Maximize2 className="w-3.5 h-3.5" /> {item.options.width}x{item.options.height}cm</span>
                               {item.options.technique && <span className="flex items-center gap-1"><Sparkles className="w-3.5 h-3.5" /> {item.options.technique}</span>}
                             </div>
