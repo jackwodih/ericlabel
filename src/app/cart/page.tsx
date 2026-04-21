@@ -67,7 +67,7 @@ export default function CartPage() {
     }
 
     const doc = new jsPDF();
-    const orange = [249, 115, 22];
+    const orange: [number, number, number] = [249, 115, 22];
     
     // --- FONCTION POUR CHARGER LE LOGO (Méthode Robuste pour Cloudinary) ---
     const loadImg = async (url: string): Promise<string> => {
