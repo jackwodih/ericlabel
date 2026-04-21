@@ -51,7 +51,7 @@ export const settingsService = {
     try {
       await setDoc(docRef, cleanedData, { merge: true });
       return true;
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Erreur Firestore directe:", e);
       throw e;
     }

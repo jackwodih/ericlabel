@@ -125,9 +125,9 @@ export default function CartPage() {
     doc.setFontSize(9);
     doc.setTextColor(80);
     doc.setFont('helvetica', 'normal');
-    let rightInfoY = 20;
+    const rightInfoY = 20;
     const rightX = 200;
-    doc.text(`${globalSettings?.address || 'Abidjan, Côte d\'Ivoire'}`, rightX, rightInfoY, { align: 'right' });
+    doc.text(`${globalSettings?.address || 'Abidjan, Côte d&apos;Ivoire'}`, rightX, rightInfoY, { align: 'right' });
     doc.text(`Tél : ${globalSettings?.phone || '+225 ...'}`, rightX, rightInfoY + 5, { align: 'right' });
     doc.text(`WhatsApp : ${globalSettings?.whatsapp || '+225 ...'}`, rightX, rightInfoY + 10, { align: 'right' });
     if (globalSettings?.legalInfo) {
@@ -168,7 +168,8 @@ export default function CartPage() {
     });
 
     // --- RÉCAPITULATIF FINANCIER ---
-    let finalY = (doc as any).lastAutoTable.finalY + 15;
+    const lastAutoTable = (doc as any).lastAutoTable; // Je garde as any ici si c'est la seule façon d'accéder à la propriété dynamique de jspdf-autotable
+    let finalY = (lastAutoTable?.finalY || 100) + 15;
     const summaryXLabel = 105; // Décalé de 130 à 105 pour éviter les chevauchements
     const summaryXValue = 200;
 
@@ -233,7 +234,7 @@ export default function CartPage() {
     doc.setTextColor(80);
     doc.setFont('helvetica', 'normal');
     
-    let bankY = pageHeight - 48;
+    const bankY = pageHeight - 48;
     if (globalSettings?.bankName) doc.text(`Banque : ${globalSettings.bankName}`, 14, bankY);
     if (globalSettings?.accountNumber) doc.text(`Compte : ${globalSettings.accountNumber}`, 70, bankY);
     if (globalSettings?.swiftCode) doc.text(`SWIFT : ${globalSettings.swiftCode}`, 130, bankY);

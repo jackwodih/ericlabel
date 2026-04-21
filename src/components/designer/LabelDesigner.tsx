@@ -12,12 +12,14 @@ import {
   Layers, 
   ShoppingCart, 
   ChevronRight, 
-  Info,
   Check,
   Plus,
   Minus,
   UploadCloud,
-  Loader2
+  Loader2,
+  FileText,
+  Clock,
+  CheckCircle2
 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';

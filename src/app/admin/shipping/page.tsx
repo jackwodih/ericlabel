@@ -62,9 +62,10 @@ export default function AdminShippingPage() {
       setNewZone({ name: '', price: 0, duration: '', active: true, order: 0 });
       loadZones();
       alert('Zone de livraison ajoutée avec succès !');
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
-      alert('Erreur lors de l\'ajout de la zone : ' + (e.message || e.code || 'Inconnue'));
+      const errMsg = e instanceof Error ? e.message : 'Inconnue';
+      alert('Erreur lors de l\'ajout de la zone : ' + errMsg);
     } finally {
       setIsSaving(false);
     }
@@ -92,9 +93,10 @@ export default function AdminShippingPage() {
         // Rechargement immédiat pour confirmer
         const freshSettings = await settingsService.getSettings();
         if (freshSettings) setGlobalSettings(freshSettings);
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
-        alert('Erreur lors de la sauvegarde : ' + (err.message || err.code || 'Permission insuffisante'));
+        const errMsg = err instanceof Error ? err.message : 'Permission insuffisante';
+        alert('Erreur lors de la sauvegarde : ' + errMsg);
     } finally {
         setIsSavingSettings(false);
     }
@@ -145,7 +147,7 @@ export default function AdminShippingPage() {
                         <div className="flex justify-between items-start">
                             <div>
                                 <h3 className="text-xl font-bold text-orange-500 mb-1">Identité de votre Marque</h3>
-                                <p className="text-sm text-gray-400">Uploadez votre logo ici pour qu'il apparaisse sur tous vos devis proforma et factures.</p>
+                                <p className="text-sm text-gray-400">Uploadez votre logo ici pour qu&apos;il apparaisse sur tous vos devis proforma et factures.</p>
                             </div>
                             <Button 
                                 type="button" 
@@ -175,7 +177,7 @@ export default function AdminShippingPage() {
                         </div>
                         <div className="flex-1 space-y-2">
                             <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
-                                Adresse de l'entreprise
+                                Adresse de l&apos;entreprise
                             </label>
                             <Input 
                                 placeholder="ex: Abidjan, Cocody II Plateaux" 
@@ -266,7 +268,7 @@ export default function AdminShippingPage() {
                                 icon={<Save />}
                                 onClick={() => {
                                     console.log("Tentative de sauvegarde des réglages:", globalSettings);
-                                    handleUpdateSettings({ preventDefault: () => {} } as any);
+                                    handleUpdateSettings({ preventDefault: () => {} } as unknown as React.FormEvent);
                                 }}
                                 className="w-full shadow-xl shadow-orange-600/20"
                             >
@@ -330,7 +332,7 @@ export default function AdminShippingPage() {
                         <AlertCircle className="w-4 h-4" /> Information
                     </h5>
                     <p className="text-xs text-gray-400 leading-relaxed">
-                        Les zones configurées ici seront immédiatement disponibles pour les clients dans leur panier. Si le tarif est à 0, la mention <b>"Livraison offerte"</b> sera automatiquement affichée.
+                        Les zones configurées ici seront immédiatement disponibles pour les clients dans leur panier. Si le tarif est à 0, la mention <b>&quot;Livraison offerte&quot;</b> sera automatiquement affichée.
                     </p>
                 </div>
             </div>
