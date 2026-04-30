@@ -323,7 +323,9 @@ export function BlogEditor({ initialData, isEditing = false }: BlogEditorProps) 
             </label>
             
             <LogoUpload 
-              onUploadSuccess={(url) => setPost({ ...post, coverImage: url })}
+              onUpload={(url) => setPost({ ...post, coverImage: url })}
+              onRemove={() => setPost({ ...post, coverImage: '' })}
+              value={post.coverImage}
             />
             
             {post.coverImage && (

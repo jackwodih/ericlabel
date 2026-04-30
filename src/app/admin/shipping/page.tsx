@@ -329,7 +329,9 @@ export default function AdminShippingPage() {
                                         <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Favicon (Icône Onglet)</label>
                                     </div>
                                     <LogoUpload 
-                                        onUploadSuccess={(url) => setGlobalSettings({...globalSettings, favicon: url})} 
+                                        onUpload={(url) => setGlobalSettings({...globalSettings, favicon: url})} 
+                                        onRemove={() => setGlobalSettings({...globalSettings, favicon: ''})}
+                                        value={globalSettings.favicon}
                                     />
                                     {globalSettings.favicon && (
                                         <div className="flex items-center gap-4 p-3 bg-slate-950 rounded-xl border border-white/5">
@@ -347,7 +349,9 @@ export default function AdminShippingPage() {
                                         <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Image Sociale (Share Image)</label>
                                     </div>
                                     <LogoUpload 
-                                        onUploadSuccess={(url) => setGlobalSettings({...globalSettings, ogImage: url})} 
+                                        onUpload={(url) => setGlobalSettings({...globalSettings, ogImage: url})} 
+                                        onRemove={() => setGlobalSettings({...globalSettings, ogImage: ''})}
+                                        value={globalSettings.ogImage}
                                     />
                                     {globalSettings.ogImage && (
                                         <div className="space-y-2">
