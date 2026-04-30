@@ -13,7 +13,8 @@ import {
   CheckCircle2,
   Lock,
   Wallet,
-  Receipt
+  Receipt,
+  Loader2
 } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Button } from '@/components/ui/Button';
@@ -118,9 +119,10 @@ export default function CheckoutPage() {
           // Clear cart after redirection starts (optional, usually done on success page)
           clearCart();
           return;
-        } catch (paymentError: any) {
+        } catch (paymentError: unknown) {
           console.error("Erreur d'initiation Money Fusion:", paymentError);
-          alert("Désolé, le service de paiement est momentanément indisponible : " + paymentError.message);
+          const errMsg = paymentError instanceof Error ? paymentError.message : "Erreur inconnue";
+          alert("Désolé, le service de paiement est momentanément indisponible : " + errMsg);
           setIsProcessing(false);
           return;
         }

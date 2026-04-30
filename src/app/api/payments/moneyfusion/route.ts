@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     // Formatage selon les exigences de Money Fusion
     const moneyFusionData = {
       totalPrice: amount,
-      article: items.map((item: any) => ({
+      article: items.map((item: { name: string; price: number; quantity: number }) => ({
         nom: item.name,
         montant: item.price * item.quantity
       })),
@@ -60,8 +60,9 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('API MoneyFusion Error:', error);
-    return NextResponse.json({ message: error.message || 'Erreur serveur interne' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Erreur serveur interne';
+    return NextResponse.json({ message }, { status: 500 });
   }
 }

@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { CheckCircle2, Package, ArrowRight, Download, Mail } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Download, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function SuccessPage() {
