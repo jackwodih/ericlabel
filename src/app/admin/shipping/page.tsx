@@ -21,7 +21,8 @@ import {
   CreditCard,
   Percent,
   Globe,
-  Key
+  Key,
+  CheckCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -258,6 +259,103 @@ export default function AdminShippingPage() {
                                 value={globalSettings.phone || ''}
                                 onChange={e => setGlobalSettings({...globalSettings, phone: e.target.value})}
                             />
+                        </div>
+
+                        {/* SEO & IDENTITÉ */}
+                        <div className="pt-8 border-t border-white/5 space-y-6">
+                            <div className="flex items-center gap-3 text-blue-400">
+                                <Globe className="w-5 h-5" />
+                                <h3 className="font-bold uppercase tracking-widest text-sm">Référencement & SEO</h3>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Nom de domaine (URL)</label>
+                                    <Input 
+                                        placeholder="https://www.labeleric.com" 
+                                        className="bg-slate-900/50"
+                                        value={globalSettings.domain || ''}
+                                        onChange={e => setGlobalSettings({...globalSettings, domain: e.target.value})}
+                                    />
+                                    <p className="text-[10px] text-gray-500 italic">Utilisé pour générer les liens de partage.</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Titre du Site (Google)</label>
+                                    <Input 
+                                        placeholder="LabelEric | Étiquettes Premium en Afrique" 
+                                        className="bg-slate-900/50"
+                                        value={globalSettings.seoTitle || ''}
+                                        onChange={e => setGlobalSettings({...globalSettings, seoTitle: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Mots-clés (Keywords)</label>
+                                    <Input 
+                                        placeholder="étiquettes, marquage, cuir, satin, afrique" 
+                                        className="bg-slate-900/50"
+                                        value={globalSettings.seoKeywords || ''}
+                                        onChange={e => setGlobalSettings({...globalSettings, seoKeywords: e.target.value})}
+                                    />
+                                    <p className="text-[10px] text-gray-500 italic">Séparez les mots par des virgules.</p>
+                                </div>
+                                <div className="space-y-2 opacity-50 pointer-events-none">
+                                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Indexation</label>
+                                    <div className="flex items-center gap-2 px-4 py-3 bg-slate-900/50 rounded-xl text-xs text-green-500 font-bold">
+                                        <CheckCircle className="w-4 h-4" /> Automatique (Sitemap actif)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Description Meta (Google)</label>
+                                <textarea 
+                                    className="w-full bg-slate-900/50 border border-white/5 rounded-xl p-4 text-sm text-gray-400 outline-none focus:border-blue-500/30 transition-all"
+                                    rows={3}
+                                    placeholder="Décrivez votre boutique pour les résultats de recherche..."
+                                    value={globalSettings.seoDescription || ''}
+                                    onChange={e => setGlobalSettings({...globalSettings, seoDescription: e.target.value})}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                                <div className="space-y-4 p-6 bg-white/5 rounded-2xl border border-white/5">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                                            <span className="text-blue-500 text-xs font-black">F</span>
+                                        </div>
+                                        <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Favicon (Icône Onglet)</label>
+                                    </div>
+                                    <LogoUpload 
+                                        onUploadSuccess={(url) => setGlobalSettings({...globalSettings, favicon: url})} 
+                                    />
+                                    {globalSettings.favicon && (
+                                        <div className="flex items-center gap-4 p-3 bg-slate-950 rounded-xl border border-white/5">
+                                            <img src={globalSettings.favicon} alt="Favicon" className="w-8 h-8 object-contain" />
+                                            <span className="text-[10px] text-gray-500 truncate">{globalSettings.favicon}</span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="space-y-4 p-6 bg-white/5 rounded-2xl border border-white/5">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                                            <span className="text-purple-500 text-xs font-black">S</span>
+                                        </div>
+                                        <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Image Sociale (Share Image)</label>
+                                    </div>
+                                    <LogoUpload 
+                                        onUploadSuccess={(url) => setGlobalSettings({...globalSettings, ogImage: url})} 
+                                    />
+                                    {globalSettings.ogImage && (
+                                        <div className="space-y-2">
+                                            <img src={globalSettings.ogImage} alt="Social Share" className="w-full h-32 object-cover rounded-xl border border-white/5" />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-white/40 uppercase tracking-widest text-[#25D366]">WhatsApp</label>

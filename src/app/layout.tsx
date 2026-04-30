@@ -13,10 +13,51 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-export const metadata: Metadata = {
-  title: "Label Eric | Étiquettes de Qualité Premium en Afrique",
-  description: "Personnalisez vos étiquettes en cuir, satin et métal. Fabrication express et livraison dans toute l'Afrique.",
-};
+import { settingsService } from "@/lib/firebase/settings";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await settingsService.getSettings();
+  
+  const title = settings?.seoTitle || "Label Eric | Étiquettes de Qualité Premium en Afrique";
+  const description = settings?.seoDescription || "Personnalisez vos étiquettes en cuir, satin et métal. Fabrication express et livraison dans toute l'Afrique.";
+  const keywords = settings?.seoKeywords || "étiquettes, personnalisation, cuir, satin, textile, afrique";
+  const url = settings?.domain || "https://labeleric.com";
+  const shareImage = settings?.ogImage || "/og-image.jpg";
+  
+  return {
+    title,
+    description,
+    keywords,
+    metadataBase: new URL(url.startsWith('http') ? url : `https://${url}`),
+    icons: {
+      icon: settings?.favicon || '/favicon.ico',
+      shortcut: settings?.favicon || '/favicon.ico',
+      apple: settings?.favicon || '/favicon.ico',
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'Label Eric',
+      images: [
+        {
+          url: shareImage,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+      locale: 'fr_FR',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [shareImage],
+    },
+  };
+}
 
 import { WhatsAppContact } from "@/components/ui/WhatsAppContact";
 

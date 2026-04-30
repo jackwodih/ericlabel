@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ShoppingCart, Menu, X, Sparkles, User, Box, Settings2 } from 'lucide-react';
+import { ShoppingCart, Menu, X, Sparkles, User, Box, Settings2, BookOpen } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -25,6 +25,7 @@ export function Navbar() {
 
   const navLinks = [
     { name: 'Catalogue', href: '/catalogue', icon: <Box className="w-4 h-4" /> },
+    { name: 'Blog', href: '/blog', icon: <BookOpen className="w-4 h-4" /> },
     { name: 'Designer', href: '/designer', icon: <Sparkles className="w-4 h-4 text-orange-500" /> },
   ];
 

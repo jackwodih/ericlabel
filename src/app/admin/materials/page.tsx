@@ -24,7 +24,8 @@ import {
   Square,
   Circle,
   Layers,
-  Truck
+  Truck,
+  FileText
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -183,6 +184,15 @@ export default function AdminMaterialsPage() {
                 icon={<Truck className="w-5 h-5" />}
             >
                 Logistique
+            </Button>
+            <Button 
+                variant="outline" 
+                size="lg"
+                className="border-blue-500/20 text-blue-400 hover:bg-blue-500/5"
+                onClick={() => router.push('/admin/blog')}
+                icon={<FileText className="w-5 h-5" />}
+            >
+                Blog & SEO
             </Button>
             <Button 
                 size="lg"

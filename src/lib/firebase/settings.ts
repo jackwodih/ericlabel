@@ -22,6 +22,13 @@ export interface AppSettings {
   depositPercentage?: number;
   moneyFusionUrl?: string;
   moneyFusionSecret?: string;
+  // SEO & Identité
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
+  favicon?: string;
+  ogImage?: string;
+  domain?: string;
 }
 
 const SETTINGS_DOC_ID = 'identity';
