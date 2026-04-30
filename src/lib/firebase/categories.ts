@@ -8,7 +8,8 @@ import {
   where
 } from 'firebase/firestore';
 import { db } from './config';
-export type { ProductCategory } from '@/lib/pricing/types';
+import { ProductCategory } from '@/lib/pricing/types';
+export type { ProductCategory };
 
 const COLLECTION_NAME = 'categories';
 
