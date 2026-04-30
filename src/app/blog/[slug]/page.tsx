@@ -53,8 +53,12 @@ export default async function BlogPostDetailPage({ params }: { params: { slug: s
   // Sérialisation sécurisée des dates pour le client component
   const serializedPost = {
     ...post,
-    createdAt: post.createdAt?.toDate ? post.createdAt.toDate().toISOString() : post.createdAt,
-    updatedAt: post.updatedAt?.toDate ? post.updatedAt.toDate().toISOString() : post.updatedAt,
+    createdAt: (post.createdAt as { toDate?: () => Date })?.toDate 
+      ? (post.createdAt as { toDate: () => Date }).toDate().toISOString() 
+      : post.createdAt,
+    updatedAt: (post.updatedAt as { toDate?: () => Date })?.toDate 
+      ? (post.updatedAt as { toDate: () => Date }).toDate().toISOString() 
+      : post.updatedAt,
   };
 
   return (
