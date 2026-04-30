@@ -159,7 +159,14 @@ export default function AdminBlogPage() {
                         <h2 className="text-xl font-bold group-hover:text-orange-500 transition-colors">{post.title}</h2>
                         <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                           <span className="flex items-center gap-1"><User className="w-3 h-3" /> {post.author}</span>
-                          <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {post.createdAt?.toDate?.()?.toLocaleDateString() || 'Date inconnue'}</span>
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" /> 
+                            {post.createdAt && (
+                              typeof post.createdAt === 'string' 
+                                ? new Date(post.createdAt).toLocaleDateString() 
+                                : (post.createdAt as { toDate?: () => {toLocaleDateString: () => string} })?.toDate?.()?.toLocaleDateString() || 'Date inconnue'
+                            )}
+                          </span>
                         </div>
                       </div>
                     </div>
