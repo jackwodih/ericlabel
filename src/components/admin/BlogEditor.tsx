@@ -266,7 +266,7 @@ export function BlogEditor({ initialData, isEditing = false }: BlogEditorProps) 
               </div>
 
               <ReactQuill 
-                ref={quillRef}
+                {...{ ref: quillRef } as any}
                 theme="snow"
                 value={post.content}
                 onChange={(content) => setPost({ ...post, content })}
