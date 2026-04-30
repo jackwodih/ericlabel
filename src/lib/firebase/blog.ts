@@ -37,7 +37,7 @@ const COLLECTION_NAME = 'posts';
 export const blogService = {
   // Récupérer tous les articles (pour l'admin)
   async getAllPosts() {
-    const q = query(collection(db, COLLECTION_NAME), orderBy('createdAt', 'desc'));
+    const q = query(collection(db!, COLLECTION_NAME), orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as BlogPost[];
   },
@@ -45,7 +45,7 @@ export const blogService = {
   // Récupérer les articles publiés (pour le site public)
   async getPublishedPosts() {
     const q = query(
-      collection(db, COLLECTION_NAME), 
+      collection(db!, COLLECTION_NAME), 
       where('published', '==', true),
       orderBy('createdAt', 'desc')
     );
@@ -55,7 +55,7 @@ export const blogService = {
 
   // Récupérer un article par son slug
   async getPostBySlug(slug: string) {
-    const q = query(collection(db, COLLECTION_NAME), where('slug', '==', slug));
+    const q = query(collection(db!, COLLECTION_NAME), where('slug', '==', slug));
     const snapshot = await getDocs(q);
     if (snapshot.empty) return null;
     return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as BlogPost;
@@ -63,7 +63,7 @@ export const blogService = {
 
   // Créer un article
   async createPost(post: Omit<BlogPost, 'id' | 'createdAt' | 'updatedAt'>) {
-    return await addDoc(collection(db, COLLECTION_NAME), {
+    return await addDoc(collection(db!, COLLECTION_NAME), {
       ...post,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
@@ -72,7 +72,7 @@ export const blogService = {
 
   // Mettre à jour un article
   async updatePost(id: string, post: Partial<BlogPost>) {
-    const docRef = doc(db, COLLECTION_NAME, id);
+    const docRef = doc(db!, COLLECTION_NAME, id);
     return await updateDoc(docRef, {
       ...post,
       updatedAt: serverTimestamp(),
@@ -81,7 +81,7 @@ export const blogService = {
 
   // Supprimer un article
   async deletePost(id: string) {
-    const docRef = doc(db, COLLECTION_NAME, id);
+    const docRef = doc(db!, COLLECTION_NAME, id);
     return await deleteDoc(docRef);
   }
 };
