@@ -266,7 +266,7 @@ export function BlogEditor({ initialData, isEditing = false }: BlogEditorProps) 
               </div>
 
               <ReactQuill 
-                {...{ ref: quillRef } as any}
+                {...{ ref: quillRef } as any} // eslint-disable-line @typescript-eslint/no-explicit-any
                 theme="snow"
                 value={post.content}
                 onChange={(content) => setPost({ ...post, content })}
