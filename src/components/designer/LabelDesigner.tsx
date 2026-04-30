@@ -16,7 +16,8 @@ import {
   Plus,
   Minus,
   UploadCloud,
-  Loader2
+  Loader2,
+  MessageSquare
 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
@@ -30,12 +31,14 @@ import { db } from '@/lib/firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { categoryService } from '@/lib/firebase/categories';
 import { materialService, Material } from '@/lib/firebase/materials';
+import { settingsService, AppSettings } from '@/lib/firebase/settings';
 
 // Hardcoded materials removed, now fetching from Firebase
 
 export function LabelDesigner() {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
+  const [settings, setSettings] = useState<AppSettings | null>(null);
   const [loadingMaterials, setLoadingMaterials] = useState(true);
   const [activeStep, setActiveStep] = useState(1);
   const [config, setConfig] = useState<PricingInput>({
@@ -72,13 +75,15 @@ export function LabelDesigner() {
   useEffect(() => {
     const fetchMaterials = async () => {
       try {
-        const [mats, cats] = await Promise.all([
+        const [mats, cats, settingsData] = await Promise.all([
           materialService.getAll(),
-          categoryService.getAll()
+          categoryService.getAll(),
+          settingsService.getSettings()
         ]);
         
         setMaterials(mats);
         setCategories(cats);
+        setSettings(settingsData);
 
         if (mats.length > 0) {
           const preSelected = materialParam 
@@ -780,12 +785,29 @@ export function LabelDesigner() {
                   </div>
                 </div>
 
-                <div className="flex gap-4 pt-6">
-                  <Button variant="outline" className="flex-1" onClick={() => setActiveStep(2)}>
+                <div className="flex flex-wrap gap-4 pt-6">
+                  <Button variant="outline" className="flex-1 min-w-[100px]" onClick={() => setActiveStep(2)}>
                     Retour
                   </Button>
+
+                  {settings?.whatsapp && (
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 min-w-[100px] border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10" 
+                      icon={<MessageSquare className="w-4 h-4" />}
+                      onClick={() => {
+                        const cleanNumber = settings.whatsapp?.replace(/\D/g, '');
+                        const totalDisplay = pricing?.total || 0;
+                        const textMsg = `Bonjour LabelEric !\n\nJ'aimerais valider ce design avec vous :\n\n- Produit : ${selectedMaterial?.name}\n- Matière : ${selectedMaterial?.name}\n- Dimensions : ${config.width}x${config.height} cm\n- Marquage : ${text}\n- Quantité : ${config.quantity} pcs\n- Estimation : ${totalDisplay.toLocaleString()} FCFA\n\nQu'en pensez-vous ?`;
+                        window.open(`https://api.whatsapp.com/send?phone=${cleanNumber}&text=${encodeURIComponent(textMsg)}`, '_blank');
+                      }}
+                    >
+                      WhatsApp
+                    </Button>
+                  )}
+
                   <Button 
-                    className="flex-[2]" 
+                    className="flex-[2] min-w-[200px]" 
                     variant="primary" 
                     icon={isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShoppingCart />} 
                     onClick={handleAddToCart}

@@ -18,17 +18,18 @@ export const metadata: Metadata = {
   description: "Personnalisez vos étiquettes en cuir, satin et métal. Fabrication express et livraison dans toute l'Afrique.",
 };
 
+import { WhatsAppContact } from "@/components/ui/WhatsAppContact";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="fr" className="scroll-smooth">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
+        <WhatsAppContact />
       </body>
     </html>
   );
