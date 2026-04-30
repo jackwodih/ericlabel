@@ -10,10 +10,8 @@ import {
   LayoutGrid, 
   Loader2,
   ArrowRight,
-  Palette,
-  Maximize2
+  Palette
 } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { materialService, Material } from '@/lib/firebase/materials';
 import { categoryService, Category } from '@/lib/firebase/categories';
@@ -86,7 +84,7 @@ function CatalogueContent() {
               <span className="text-orange-500 font-bold uppercase tracking-[0.3em] text-xs">Collection Premium</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-black mb-8 leading-tight">
-              Explorez nos <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-500">Matières</span> d'exception
+              Explorez nos <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-500">Matières</span> d&apos;exception
             </h1>
             <p className="text-xl text-gray-400 leading-relaxed mb-10 max-w-2xl">
               Chaque étiquette raconte une histoire. Choisissez la matière qui sublimera vos créations parmi notre sélection rigoureuse de cuirs, tissus et bois.
@@ -137,7 +135,7 @@ function CatalogueContent() {
 
             <div className="p-6 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10">
               <Sparkles className="w-6 h-6 text-orange-500 mb-4" />
-              <h4 className="font-bold mb-2 text-sm">Besoin d'aide ?</h4>
+              <h4 className="font-bold mb-2 text-sm">Besoin d&apos;aide ?</h4>
               <p className="text-[10px] text-gray-500 leading-relaxed uppercase tracking-widest font-bold">
                 Notre équipe vous accompagne dans le choix de la matière idéale pour votre projet.
               </p>
