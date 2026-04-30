@@ -1,5 +1,5 @@
 import { Navbar } from '@/components/layout/Navbar';
-import { blogService } from '@/lib/firebase/blog';
+import { blogService, BlogPost } from '@/lib/firebase/blog';
 import { settingsService } from '@/lib/firebase/settings';
 import { BlogPostDetailContent } from '@/components/blog/BlogPostDetailContent';
 import { Metadata } from 'next';
