@@ -237,7 +237,7 @@ export function LabelDesigner() {
                 />
               )}
               
-                {logoUrl && config.logoSettings && (
+                {logoUrl && config.logoSettings && selectedMaterial?.customization?.enableLogo !== false && (
                   <div 
                     className="absolute pointer-events-none"
                     style={{ 
@@ -257,17 +257,19 @@ export function LabelDesigner() {
                     />
                   </div>
                 )}
-                <span 
-                  className={`relative z-10 font-bold tracking-widest text-center px-2 ${fontFamily}`}
-                  style={{ 
-                    color, 
-                    fontSize: (selectedMaterial?.shape === 'circle' || selectedMaterial?.shape === 'square')
-                      ? Math.min((config.height ?? 0) * 7, (config.width ?? 0) * 4) 
-                      : Math.min((config.height ?? 0) * 10, (config.width ?? 0) * 5) 
-                  }}
-                >
-                  {text || 'VOTRE NOM'}
-                </span>
+                {selectedMaterial?.customization?.enableText !== false && (
+                  <span 
+                    className={`relative z-10 font-bold tracking-widest text-center px-2 ${fontFamily}`}
+                    style={{ 
+                      color, 
+                      fontSize: (selectedMaterial?.shape === 'circle' || selectedMaterial?.shape === 'square')
+                        ? Math.min((config.height ?? 0) * 7, (config.width ?? 0) * 4) 
+                        : Math.min((config.height ?? 0) * 10, (config.width ?? 0) * 5) 
+                    }}
+                  >
+                    {text || 'VOTRE NOM'}
+                  </span>
+                )}
               </motion.div>
 
             {/* Scale indicator */}
@@ -487,11 +489,16 @@ export function LabelDesigner() {
                 className="space-y-6"
               >
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                    <Type className="w-5 h-5 text-orange-500" />
-                    Dimensions & Texte
-                  </h3>
-                  {selectedCategory?.pricingModel !== 'unit' && (
+                  {(selectedMaterial?.customization?.enableDimensions !== false || 
+                    selectedMaterial?.customization?.enableMaterialColor !== false || 
+                    selectedMaterial?.customization?.enableText !== false || 
+                    selectedMaterial?.customization?.enableMarkingColor !== false) && (
+                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                      <Type className="w-5 h-5 text-orange-500" />
+                      Dimensions & Texte
+                    </h3>
+                  )}
+                  {selectedCategory?.pricingModel !== 'unit' && selectedMaterial?.customization?.enableDimensions !== false && (
                     <div className="grid grid-cols-2 gap-4">
                       <Input 
                         label="Largeur (cm)" 
@@ -509,169 +516,179 @@ export function LabelDesigner() {
                       />
                     </div>
                   )}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
-                      <Palette className="w-4 h-4" /> Couleur du matériau (Cuir/Tissu)
-                    </label>
-                    <div className="flex gap-2 flex-wrap items-center">
-                      {['#f97316', '#9a3412', '#1e293b', '#000000', '#166534', '#1e3a8a', '#701a75'].map(c => (
-                        <button
-                          key={c}
-                          onClick={() => setMaterialColor(c)}
-                          className={`w-8 h-8 rounded-full border-2 ${materialColor === c ? 'border-orange-500 scale-125' : 'border-white/20'}`}
-                          style={{ backgroundColor: c }}
-                        />
-                      ))}
-                      <div className="relative w-8 h-8 rounded-full border-2 border-white/20 overflow-hidden flex items-center justify-center bg-gradient-to-tr from-red-500 via-green-500 to-blue-500">
-                        <input 
-                          type="color" 
-                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full scale-[2]" 
-                          value={materialColor}
-                          onChange={(e) => setMaterialColor(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <Input 
-                    label="Texte sur l'étiquette" 
-                    className="bg-white/5 border-white/10 text-white"
-                    placeholder="Votre texte ici"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                  />
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
-                      <Palette className="w-4 h-4" /> Couleur du marquage (Impression)
-                    </label>
-                    <div className="flex gap-2 flex-wrap items-center">
-                      {['#ffffff', '#000000', '#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#fbbf24'].map(c => (
-                        <button
-                          key={c}
-                          onClick={() => setColor(c)}
-                          className={`w-8 h-8 rounded-full border-2 ${color === c ? 'border-orange-500 scale-125' : 'border-white/20'}`}
-                          style={{ backgroundColor: c }}
-                        />
-                      ))}
-                      <div className="relative w-8 h-8 rounded-full border-2 border-white/20 overflow-hidden flex items-center justify-center bg-gradient-to-tr from-red-500 via-green-500 to-blue-500">
-                        <input 
-                          type="color" 
-                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full scale-[2]" 
-                          value={color}
-                          onChange={(e) => setColor(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                     <label className="block text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
-                       <Type className="w-4 h-4" /> Style de police
-                     </label>
-                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {[
-                          { id: 'font-serif', name: 'Élégant' },
-                          { id: 'font-mono', name: 'Moderne' },
-                          { id: 'font-sans', name: 'Minimal' },
-                          { id: 'font-bold italic', name: 'Cursive' },
-                        ].map(f => (
+                  {selectedMaterial?.customization?.enableMaterialColor !== false && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
+                        <Palette className="w-4 h-4" /> Couleur du matériau (Cuir/Tissu)
+                      </label>
+                      <div className="flex gap-2 flex-wrap items-center">
+                        {['#f97316', '#9a3412', '#1e293b', '#000000', '#166534', '#1e3a8a', '#701a75'].map(c => (
                           <button
-                            key={f.id}
-                            onClick={() => setFontFamily(f.id)}
-                            className={`px-3 py-2 rounded-lg text-[10px] font-bold border transition-all ${
-                              fontFamily === f.id ? 'bg-orange-600 border-orange-500 text-white' : 'bg-white/5 border-white/10 text-gray-400'
-                            }`}
-                          >
-                            {f.name}
-                          </button>
+                            key={c}
+                            onClick={() => setMaterialColor(c)}
+                            className={`w-8 h-8 rounded-full border-2 ${materialColor === c ? 'border-orange-500 scale-125' : 'border-white/20'}`}
+                            style={{ backgroundColor: c }}
+                          />
                         ))}
-                     </div>
-                  </div>
+                        <div className="relative w-8 h-8 rounded-full border-2 border-white/20 overflow-hidden flex items-center justify-center bg-gradient-to-tr from-red-500 via-green-500 to-blue-500">
+                          <input 
+                            type="color" 
+                            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full scale-[2]" 
+                            value={materialColor}
+                            onChange={(e) => setMaterialColor(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
-                  <div className="pt-2">
-                    <label className="block text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
-                       <UploadCloud className="w-4 h-4 text-orange-500" /> Ajouter un logo (optionnel)
-                    </label>
-                    <LogoUpload 
-                      onUpload={setLogoUrl} 
-                      onRemove={() => setLogoUrl(null)} 
-                      value={logoUrl || undefined} 
+                  {selectedMaterial?.customization?.enableText !== false && (
+                    <Input 
+                      label="Texte sur l'étiquette" 
+                      className="bg-white/5 border-white/10 text-white"
+                      placeholder="Votre texte ici"
+                      value={text}
+                      onChange={(e) => setText(e.target.value)}
                     />
+                  )}
 
-                    {logoUrl && config.logoSettings && (
-                      <motion.div 
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        className="mt-6 p-4 bg-orange-500/5 rounded-xl border border-orange-500/10 space-y-4"
-                      >
-                         <h4 className="text-xs font-bold uppercase tracking-wider text-orange-500">Réglages du logo</h4>
-                         
-                         <div className="grid grid-cols-2 gap-4">
-                           <div className="space-y-2">
-                             <label className="text-[10px] text-gray-400">Position X</label>
-                             <input 
-                                type="range" min="0" max="100" 
+                  {selectedMaterial?.customization?.enableMarkingColor !== false && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
+                        <Palette className="w-4 h-4" /> Couleur du marquage (Impression)
+                      </label>
+                      <div className="flex gap-2 flex-wrap items-center">
+                        {['#ffffff', '#000000', '#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#fbbf24'].map(c => (
+                          <button
+                            key={c}
+                            onClick={() => setColor(c)}
+                            className={`w-8 h-8 rounded-full border-2 ${color === c ? 'border-orange-500 scale-125' : 'border-white/20'}`}
+                            style={{ backgroundColor: c }}
+                          />
+                        ))}
+                        <div className="relative w-8 h-8 rounded-full border-2 border-white/20 overflow-hidden flex items-center justify-center bg-gradient-to-tr from-red-500 via-green-500 to-blue-500">
+                          <input 
+                            type="color" 
+                            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full scale-[2]" 
+                            value={color}
+                            onChange={(e) => setColor(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedMaterial?.customization?.enableFonts !== false && (
+                    <div>
+                       <label className="block text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
+                         <Type className="w-4 h-4" /> Style de police
+                       </label>
+                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                          {[
+                            { id: 'font-serif', name: 'Élégant' },
+                            { id: 'font-mono', name: 'Moderne' },
+                            { id: 'font-sans', name: 'Minimal' },
+                            { id: 'font-bold italic', name: 'Cursive' },
+                          ].map(f => (
+                            <button
+                              key={f.id}
+                              onClick={() => setFontFamily(f.id)}
+                              className={`px-3 py-2 rounded-lg text-[10px] font-bold border transition-all ${
+                                fontFamily === f.id ? 'bg-orange-600 border-orange-500 text-white' : 'bg-white/5 border-white/10 text-gray-400'
+                              }`}
+                            >
+                              {f.name}
+                            </button>
+                          ))}
+                       </div>
+                    </div>
+                  )}
+
+                  {selectedMaterial?.customization?.enableLogo !== false && (
+                    <div className="pt-2">
+                      <label className="block text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
+                        <UploadCloud className="w-4 h-4 text-orange-500" /> Ajouter un logo (optionnel)
+                      </label>
+                      <LogoUpload 
+                        onUpload={setLogoUrl} 
+                        onRemove={() => setLogoUrl(null)} 
+                        value={logoUrl || undefined} 
+                      />
+                      {logoUrl && config.logoSettings && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          className="mt-6 p-4 bg-orange-500/5 rounded-xl border border-orange-500/10 space-y-4"
+                        >
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-orange-500">Réglages du logo</h4>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <label className="text-[10px] text-gray-400">Position X</label>
+                              <input 
+                                  type="range" min="0" max="100" 
+                                  className="w-full accent-orange-500 bg-white/5"
+                                  value={config.logoSettings.x}
+                                  onChange={(e) => setConfig({
+                                    ...config, 
+                                    logoSettings: { ...config.logoSettings!, x: Number(e.target.value) }
+                                  })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[10px] text-gray-400">Position Y</label>
+                              <input 
+                                  type="range" min="0" max="100" 
+                                  className="w-full accent-orange-500 bg-white/5"
+                                  value={config.logoSettings.y}
+                                  onChange={(e) => setConfig({
+                                    ...config, 
+                                    logoSettings: { ...config.logoSettings!, y: Number(e.target.value) }
+                                  })}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                              <label className="text-[10px] text-gray-400">Taille du logo</label>
+                              <input 
+                                type="range" min="0.2" max="3" step="0.1"
                                 className="w-full accent-orange-500 bg-white/5"
-                                value={config.logoSettings.x}
+                                value={config.logoSettings.scale}
                                 onChange={(e) => setConfig({
                                   ...config, 
-                                  logoSettings: { ...config.logoSettings!, x: Number(e.target.value) }
+                                  logoSettings: { ...config.logoSettings!, scale: Number(e.target.value) }
                                 })}
-                             />
-                           </div>
-                           <div className="space-y-2">
-                             <label className="text-[10px] text-gray-400">Position Y</label>
-                             <input 
-                                type="range" min="0" max="100" 
-                                className="w-full accent-orange-500 bg-white/5"
-                                value={config.logoSettings.y}
-                                onChange={(e) => setConfig({
-                                  ...config, 
-                                  logoSettings: { ...config.logoSettings!, y: Number(e.target.value) }
-                                })}
-                             />
-                           </div>
-                         </div>
+                              />
+                          </div>
 
-                         <div className="space-y-2">
-                            <label className="text-[10px] text-gray-400">Taille du logo</label>
-                            <input 
-                               type="range" min="0.2" max="3" step="0.1"
-                               className="w-full accent-orange-500 bg-white/5"
-                               value={config.logoSettings.scale}
-                               onChange={(e) => setConfig({
-                                 ...config, 
-                                 logoSettings: { ...config.logoSettings!, scale: Number(e.target.value) }
-                               })}
-                            />
-                         </div>
-
-                         <div className="pt-2">
-                           <label className="text-[10px] text-gray-400 mb-2 block">Effet de rendu</label>
-                           <div className="grid grid-cols-2 gap-2">
-                              <button 
-                                onClick={() => setConfig({
-                                  ...config, 
-                                  logoSettings: { ...config.logoSettings!, blendMode: 'normal' }
-                                })}
-                                className={`py-2 rounded-lg text-[10px] font-bold border ${config.logoSettings.blendMode === 'normal' ? 'bg-orange-500 border-orange-400 text-white' : 'bg-white/5 border-white/10 text-gray-400'}`}
-                              >
-                                Réel (Photo)
-                              </button>
-                              <button 
-                                onClick={() => setConfig({
-                                  ...config, 
-                                  logoSettings: { ...config.logoSettings!, blendMode: 'multiply' }
-                                })}
-                                className={`py-2 rounded-lg text-[10px] font-bold border ${config.logoSettings.blendMode === 'multiply' ? 'bg-orange-500 border-orange-400 text-white' : 'bg-white/5 border-white/10 text-gray-400'}`}
-                              >
-                                Incrusté (Fusion)
-                              </button>
-                           </div>
-                         </div>
-                      </motion.div>
-                    )}
-                  </div>
+                          <div className="pt-2">
+                            <label className="text-[10px] text-gray-400 mb-2 block">Effet de rendu</label>
+                            <div className="grid grid-cols-2 gap-2">
+                                <button 
+                                  onClick={() => setConfig({
+                                    ...config, 
+                                    logoSettings: { ...config.logoSettings!, blendMode: 'normal' }
+                                  })}
+                                  className={`py-2 rounded-lg text-[10px] font-bold border ${config.logoSettings.blendMode === 'normal' ? 'bg-orange-500 border-orange-400 text-white' : 'bg-white/5 border-white/10 text-gray-400'}`}
+                                >
+                                  Réel (Photo)
+                                </button>
+                                <button 
+                                  onClick={() => setConfig({
+                                    ...config, 
+                                    logoSettings: { ...config.logoSettings!, blendMode: 'multiply' }
+                                  })}
+                                  className={`py-2 rounded-lg text-[10px] font-bold border ${config.logoSettings.blendMode === 'multiply' ? 'bg-orange-500 border-orange-400 text-white' : 'bg-white/5 border-white/10 text-gray-400'}`}
+                                >
+                                  Incrusté (Fusion)
+                                </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex gap-4 pt-4">

@@ -11,6 +11,15 @@ import { db } from './config';
 
 import { ProductType, PricingRule } from '@/lib/pricing/types';
 
+export interface CustomizationConfig {
+  enableDimensions: boolean;
+  enableMaterialColor: boolean;
+  enableText: boolean;
+  enableMarkingColor: boolean;
+  enableFonts: boolean;
+  enableLogo: boolean;
+}
+
 export interface Material {
   id?: string;
   name: string;
@@ -37,6 +46,7 @@ export interface Material {
   defaultHeight?: number;
   variants?: MaterialVariant[];
   discounts?: DiscountTier[];
+  customization?: CustomizationConfig;
 }
 
 export interface DiscountTier {
@@ -64,6 +74,15 @@ export const materialService = {
     if (!db) return [];
     const q = query(collection(db, COLLECTION_NAME), where('active', '==', true));
     const snapshot = await getDocs(q);
+    const defaults = {
+      enableDimensions: true,
+      enableMaterialColor: true,
+      enableText: true,
+      enableMarkingColor: true,
+      enableFonts: true,
+      enableLogo: true
+    };
+
     return snapshot.docs.map(doc => {
       const data = doc.data();
       return { 
@@ -72,6 +91,10 @@ export const materialService = {
         // Valeurs par défaut pour l'évolutivité
         productType: data.productType || 'label',
         pricingModel: data.pricingModel || 'surface',
+        customization: {
+          ...defaults,
+          ...(data.customization || {})
+        }
       };
     }) as Material[];
   },

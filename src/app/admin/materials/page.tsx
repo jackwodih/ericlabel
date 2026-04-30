@@ -56,7 +56,15 @@ export default function AdminMaterialsPage() {
     textureUrl: '',
     shape: 'rectangle',
     defaultWidth: 6,
-    defaultHeight: 2
+    defaultHeight: 2,
+    customization: {
+      enableDimensions: true,
+      enableMaterialColor: true,
+      enableText: true,
+      enableMarkingColor: true,
+      enableFonts: true,
+      enableLogo: true
+    }
   };
 
   const [newMaterial, setNewMaterial] = useState<Material>(initialMaterial);
@@ -297,21 +305,26 @@ export default function AdminMaterialsPage() {
                           </div>
                         </div>
 
-                        <Input 
-                          type="number" 
-                          label="Frais Techniques / Base (FCFA)" 
-                          icon={<span className="text-xs font-bold">F</span>}
-                          value={newMaterial.basePrice}
-                          onChange={e => setNewMaterial({...newMaterial, basePrice: Number(e.target.value)})}
-                        />
+                        <div className="space-y-1">
+                          <Input 
+                            type="number" 
+                            label="Frais de Base / Fixes (FCFA)" 
+                            placeholder="0"
+                            icon={<span className="text-xs font-bold">F</span>}
+                            value={newMaterial.basePrice === 0 ? '' : newMaterial.basePrice}
+                            onChange={e => setNewMaterial({...newMaterial, basePrice: e.target.value === '' ? 0 : Number(e.target.value)})}
+                          />
+                          <p className="text-[9px] text-gray-500 px-1">Frais fixes ajoutés au prix unitaire (ex: frais de dossier).</p>
+                        </div>
 
                         {newMaterial.pricingModel === 'surface' && (
                           <Input 
                             type="number" 
                             label="Prix par cm² (FCFA)" 
+                            placeholder="0"
                             icon={<span className="text-xs font-bold">cm²</span>}
-                            value={newMaterial.pricePerSqCm}
-                            onChange={e => setNewMaterial({...newMaterial, pricePerSqCm: Number(e.target.value)})}
+                            value={newMaterial.pricePerSqCm === 0 ? '' : newMaterial.pricePerSqCm}
+                            onChange={e => setNewMaterial({...newMaterial, pricePerSqCm: e.target.value === '' ? 0 : Number(e.target.value)})}
                           />
                         )}
                         
@@ -319,9 +332,10 @@ export default function AdminMaterialsPage() {
                           <Input 
                             type="number" 
                             label="Prix par Unité (FCFA)" 
+                            placeholder="0"
                             icon={<span className="text-xs font-bold">Pcs</span>}
-                            value={newMaterial.pricePerUnit}
-                            onChange={e => setNewMaterial({...newMaterial, pricePerUnit: Number(e.target.value)})}
+                            value={newMaterial.pricePerUnit === 0 ? '' : newMaterial.pricePerUnit}
+                            onChange={e => setNewMaterial({...newMaterial, pricePerUnit: e.target.value === '' ? 0 : Number(e.target.value)})}
                           />
                         )}
 
@@ -329,11 +343,85 @@ export default function AdminMaterialsPage() {
                           <Input 
                             type="number" 
                             label="Prix par cm³ (FCFA)" 
+                            placeholder="0"
                             icon={<span className="text-xs font-bold">cm³</span>}
-                            value={newMaterial.pricePerCm3}
-                            onChange={e => setNewMaterial({...newMaterial, pricePerCm3: Number(e.target.value)})}
+                            value={newMaterial.pricePerCm3 === 0 ? '' : newMaterial.pricePerCm3}
+                            onChange={e => setNewMaterial({...newMaterial, pricePerCm3: e.target.value === '' ? 0 : Number(e.target.value)})}
                           />
                         )}
+                      </div>
+                    </section>
+                    
+                    {/* Customization Options */}
+                    <section className="space-y-6 pt-6 border-t border-white/5">
+                      <div className="flex items-center gap-3 text-xl font-bold border-b border-white/5 pb-4">
+                        <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500">
+                          <Eye className="w-4 h-4" />
+                        </div>
+                        Options de Personnalisation client
+                      </div>
+                      <p className="text-sm text-gray-400 -mt-2">
+                        Activez ou désactivez les sections visibles par le client final dans le configurateur.
+                      </p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {[
+                          { id: 'enableDimensions', label: 'Dimensions (cm)', icon: <Square className="w-4 h-4" /> },
+                          { id: 'enableMaterialColor', label: 'Couleur du matériau', icon: <Palette className="w-4 h-4" /> },
+                          { id: 'enableText', label: 'Texte sur l\'étiquette', icon: <span className="font-bold text-xs">T</span> },
+                          { id: 'enableMarkingColor', label: 'Couleur du marquage', icon: <Palette className="w-4 h-4" /> },
+                          { id: 'enableFonts', label: 'Style de police', icon: <span className="font-serif text-xs">Ag</span> },
+                          { id: 'enableLogo', label: 'Ajout de logo', icon: <Plus className="w-4 h-4" /> },
+                        ].map((opt) => (
+                          <div 
+                            key={opt.id}
+                            className={`flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer ${
+                              newMaterial.customization?.[opt.id as keyof typeof newMaterial.customization] 
+                                ? 'bg-blue-500/5 border-blue-500/20 text-white' 
+                                : 'bg-white/5 border-white/5 text-gray-500'
+                            }`}
+                            onClick={() => {
+                              const current = newMaterial.customization || {
+                                enableDimensions: true,
+                                enableMaterialColor: true,
+                                enableText: true,
+                                enableMarkingColor: true,
+                                enableFonts: true,
+                                enableLogo: true
+                              };
+                              setNewMaterial({
+                                ...newMaterial,
+                                customization: {
+                                  ...current,
+                                  [opt.id]: !current[opt.id as keyof typeof current]
+                                }
+                              });
+                            }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                                newMaterial.customization?.[opt.id as keyof typeof newMaterial.customization] 
+                                  ? 'bg-blue-500/20 text-blue-400' 
+                                  : 'bg-white/5 text-gray-600'
+                              }`}>
+                                {opt.icon}
+                              </div>
+                              <span className="text-sm font-medium">{opt.label}</span>
+                            </div>
+                            
+                            <div className={`w-10 h-5 rounded-full relative transition-colors ${
+                              newMaterial.customization?.[opt.id as keyof typeof newMaterial.customization] 
+                                ? 'bg-blue-500' 
+                                : 'bg-gray-700'
+                            }`}>
+                              <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${
+                                newMaterial.customization?.[opt.id as keyof typeof newMaterial.customization] 
+                                  ? 'left-6' 
+                                  : 'left-1'
+                              }`} />
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </section>
 
@@ -521,11 +609,12 @@ export default function AdminMaterialsPage() {
                                     <td className="py-4 pr-4">
                                       <input 
                                         type="number"
+                                        placeholder="0"
                                         className="w-32 bg-slate-900 border border-white/10 rounded px-3 py-2 text-sm outline-none focus:border-orange-500"
                                         value={
-                                          (newMaterial.pricingModel === 'surface' ? v.pricePerSqCm :
-                                          newMaterial.pricingModel === 'unit' ? v.pricePerUnit :
-                                          v.pricePerCm3) || ''
+                                          (newMaterial.pricingModel === 'surface' ? (v.pricePerSqCm === 0 ? '' : v.pricePerSqCm) :
+                                          newMaterial.pricingModel === 'unit' ? (v.pricePerUnit === 0 ? '' : v.pricePerUnit) :
+                                          (v.pricePerCm3 === 0 ? '' : v.pricePerCm3))
                                         }
                                         onChange={e => {
                                           const val = e.target.value === '' ? 0 : Number(e.target.value);
@@ -607,37 +696,39 @@ export default function AdminMaterialsPage() {
                                   <Trash className="w-3 h-3" />
                                 </button>
                                 <div className="grid grid-cols-2 gap-4">
-                                  <div className="space-y-1">
-                                    <label className="text-[10px] text-gray-500 uppercase font-bold">Quantité Min</label>
-                                    <input 
-                                      type="number"
-                                      className="w-full bg-slate-900 border border-white/10 rounded px-3 py-1 text-sm outline-none focus:border-orange-500"
-                                      value={tier.quantity || ''}
-                                      onChange={e => {
-                                        const val = e.target.value === '' ? 0 : Number(e.target.value);
-                                        const updated = [...(newMaterial.discounts || [])];
-                                        updated[idx].quantity = val;
-                                        setNewMaterial({...newMaterial, discounts: updated});
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="space-y-1">
-                                    <label className="text-[10px] text-gray-500 uppercase font-bold">Remise (%)</label>
-                                    <div className="relative">
+                                    <div className="space-y-1">
+                                      <label className="text-[10px] text-gray-500 uppercase font-bold">Quantité Min</label>
                                       <input 
                                         type="number"
-                                        className="w-full bg-slate-900 border border-white/10 rounded px-3 py-1 text-sm outline-none focus:border-orange-500 pr-6"
-                                        value={tier.discountPercentage || ''}
+                                        placeholder="0"
+                                        className="w-full bg-slate-900 border border-white/10 rounded px-3 py-1 text-sm outline-none focus:border-orange-500"
+                                        value={tier.quantity === 0 ? '' : tier.quantity}
                                         onChange={e => {
                                           const val = e.target.value === '' ? 0 : Number(e.target.value);
                                           const updated = [...(newMaterial.discounts || [])];
-                                          updated[idx].discountPercentage = val;
+                                          updated[idx].quantity = val;
                                           setNewMaterial({...newMaterial, discounts: updated});
                                         }}
                                       />
-                                      <span className="absolute right-2 top-1.5 text-xs text-gray-500">%</span>
                                     </div>
-                                  </div>
+                                    <div className="space-y-1">
+                                      <label className="text-[10px] text-gray-500 uppercase font-bold">Remise (%)</label>
+                                      <div className="relative">
+                                        <input 
+                                          type="number"
+                                          placeholder="0"
+                                          className="w-full bg-slate-900 border border-white/10 rounded px-3 py-1 text-sm outline-none focus:border-orange-500 pr-6"
+                                          value={tier.discountPercentage === 0 ? '' : tier.discountPercentage}
+                                          onChange={e => {
+                                            const val = e.target.value === '' ? 0 : Number(e.target.value);
+                                            const updated = [...(newMaterial.discounts || [])];
+                                            updated[idx].discountPercentage = val;
+                                            setNewMaterial({...newMaterial, discounts: updated});
+                                          }}
+                                        />
+                                        <span className="absolute right-2 top-1.5 text-xs text-gray-500">%</span>
+                                      </div>
+                                    </div>
                                 </div>
                               </div>
                             ))}
@@ -841,12 +932,20 @@ export default function AdminMaterialsPage() {
                         
                         <div className="grid grid-cols-2 gap-4 border-t border-white/5 pt-4">
                            <div>
-                             <p className="text-[10px] text-gray-500 uppercase font-bold">Base</p>
-                             <p className="font-mono text-white font-bold">{m.basePrice} FCFA</p>
+                             <p className="text-[10px] text-gray-500 uppercase font-bold">Base (Fixe)</p>
+                             <p className="font-mono text-white font-bold">{m.basePrice || 0} FCFA</p>
                            </div>
                            <div className="text-right">
-                             <p className="text-[10px] text-gray-500 uppercase font-bold">cm²</p>
-                             <p className="font-mono text-white font-bold">{(m.pricePerSqCm ?? 0)} FCFA</p>
+                             <p className="text-[10px] text-gray-500 uppercase font-bold">
+                               {m.pricingModel === 'surface' ? 'Prix au cm²' : 
+                                m.pricingModel === 'unit' ? 'Prix Unité' : 
+                                'Prix cm³'}
+                             </p>
+                             <p className="font-mono text-white font-bold">
+                               {m.pricingModel === 'surface' ? (m.pricePerSqCm || 0) : 
+                                m.pricingModel === 'unit' ? (m.pricePerUnit || 0) : 
+                                (m.pricePerCm3 || 0)} FCFA
+                             </p>
                            </div>
                         </div>
                       </div>
