@@ -38,7 +38,7 @@ export function WhatsAppContact() {
           className="flex items-center gap-3 bg-[#25D366] text-white p-4 rounded-full shadow-2xl shadow-green-500/20 hover:bg-[#20ba5a] transition-all group"
         >
           <div className="flex flex-col items-end mr-2 md:block hidden">
-            <span className="text-[10px] font-black uppercase tracking-widest opacity-70">Besoin d'aide ?</span>
+            <span className="text-[10px] font-black uppercase tracking-widest opacity-70">Besoin d&apos;aide ?</span>
             <span className="text-xs font-bold">Contactez-nous</span>
           </div>
           <div className="relative">
