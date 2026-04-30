@@ -29,6 +29,14 @@ export interface AppSettings {
   favicon?: string;
   ogImage?: string;
   domain?: string;
+  // Réseaux Sociaux
+  facebook?: string;
+  tiktok?: string;
+  youtube?: string;
+  pinterest?: string;
+  // Contenu Informatif
+  legalInfoLong?: string;
+  faq?: { question: string; answer: string }[];
 }
 
 const SETTINGS_DOC_ID = 'identity';

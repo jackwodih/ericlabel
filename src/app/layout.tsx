@@ -60,6 +60,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 import { WhatsAppContact } from "@/components/ui/WhatsAppContact";
+import { Footer } from "@/components/layout/Footer";
 
 export default function RootLayout({
   children,
@@ -70,6 +71,7 @@ export default function RootLayout({
     <html lang="fr" className="scroll-smooth">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
+        <Footer />
         <WhatsAppContact />
       </body>
     </html>

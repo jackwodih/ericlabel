@@ -22,7 +22,10 @@ import {
   Percent,
   Globe,
   Key,
-  CheckCircle
+  CheckCircle,
+  Share2,
+  FileText,
+  HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -369,6 +372,145 @@ export default function AdminShippingPage() {
                                 value={globalSettings.whatsapp || ''}
                                 onChange={e => setGlobalSettings({...globalSettings, whatsapp: e.target.value})}
                             />
+                        </div>
+
+                        {/* Réseaux Sociaux */}
+                        <div className="pt-8 border-t border-white/5 space-y-6">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                                    <Share2 className="w-4 h-4 text-blue-500" />
+                                </div>
+                                <h3 className="text-sm font-bold uppercase tracking-widest text-white/60">Présence Sociale</h3>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Facebook</label>
+                                    <Input 
+                                        placeholder="https://facebook.com/..." 
+                                        className="bg-slate-900/50"
+                                        value={globalSettings.facebook || ''}
+                                        onChange={e => setGlobalSettings({...globalSettings, facebook: e.target.value})}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">TikTok</label>
+                                    <Input 
+                                        placeholder="https://tiktok.com/@..." 
+                                        className="bg-slate-900/50"
+                                        value={globalSettings.tiktok || ''}
+                                        onChange={e => setGlobalSettings({...globalSettings, tiktok: e.target.value})}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">YouTube</label>
+                                    <Input 
+                                        placeholder="https://youtube.com/c/..." 
+                                        className="bg-slate-900/50"
+                                        value={globalSettings.youtube || ''}
+                                        onChange={e => setGlobalSettings({...globalSettings, youtube: e.target.value})}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Pinterest</label>
+                                    <Input 
+                                        placeholder="https://pinterest.com/..." 
+                                        className="bg-slate-900/50"
+                                        value={globalSettings.pinterest || ''}
+                                        onChange={e => setGlobalSettings({...globalSettings, pinterest: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Mentions Légales & FAQ */}
+                        <div className="pt-8 border-t border-white/5 space-y-8">
+                            {/* Mentions Légales */}
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                                        <FileText className="w-4 h-4 text-purple-500" />
+                                    </div>
+                                    <h3 className="text-sm font-bold uppercase tracking-widest text-white/60">Mentions Légales</h3>
+                                </div>
+                                <textarea 
+                                    className="w-full h-40 bg-slate-900/50 border border-white/10 rounded-xl p-4 text-sm text-gray-300 focus:outline-none focus:border-orange-500/50 transition-colors"
+                                    placeholder="Rédigez vos mentions légales ici..."
+                                    value={globalSettings.legalInfoLong || ''}
+                                    onChange={e => setGlobalSettings({...globalSettings, legalInfoLong: e.target.value})}
+                                />
+                            </div>
+
+                            {/* FAQ */}
+                            <div className="space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                                            <HelpCircle className="w-4 h-4 text-orange-500" />
+                                        </div>
+                                        <h3 className="text-sm font-bold uppercase tracking-widest text-white/60">Foire Aux Questions (FAQ)</h3>
+                                    </div>
+                                    <Button 
+                                        type="button" 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => {
+                                            const newFaq = [...(globalSettings.faq || []), { question: '', answer: '' }];
+                                            setGlobalSettings({...globalSettings, faq: newFaq});
+                                        }}
+                                        className="text-[10px] h-8"
+                                    >
+                                        <Plus className="w-3 h-3 mr-1" /> Ajouter une question
+                                    </Button>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {(globalSettings.faq || []).map((item, index) => (
+                                        <div key={index} className="p-4 bg-slate-950/50 border border-white/5 rounded-xl space-y-4 relative group">
+                                            <button 
+                                                onClick={() => {
+                                                    const newFaq = (globalSettings.faq || []).filter((_, i) => i !== index);
+                                                    setGlobalSettings({...globalSettings, faq: newFaq});
+                                                }}
+                                                className="absolute top-2 right-2 p-1 text-gray-600 hover:text-red-500 transition-colors"
+                                            >
+                                                <Trash className="w-4 h-4" />
+                                            </button>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-white/20 uppercase tracking-widest">Question {index + 1}</label>
+                                                <Input 
+                                                    placeholder="Ex: Quels sont les délais de livraison ?" 
+                                                    className="bg-slate-900/50 border-white/5"
+                                                    value={item.question}
+                                                    onChange={e => {
+                                                        const newFaq = [...(globalSettings.faq || [])];
+                                                        newFaq[index].question = e.target.value;
+                                                        setGlobalSettings({...globalSettings, faq: newFaq});
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-white/20 uppercase tracking-widest">Réponse</label>
+                                                <textarea 
+                                                    className="w-full h-24 bg-slate-900/50 border border-white/5 rounded-lg p-3 text-sm text-gray-400 focus:outline-none focus:border-orange-500/30 transition-colors"
+                                                    placeholder="Votre réponse ici..."
+                                                    value={item.answer}
+                                                    onChange={e => {
+                                                        const newFaq = [...(globalSettings.faq || [])];
+                                                        newFaq[index].answer = e.target.value;
+                                                        setGlobalSettings({...globalSettings, faq: newFaq});
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {(globalSettings.faq || []).length === 0 && (
+                                        <div className="text-center py-10 border-2 border-dashed border-white/5 rounded-2xl">
+                                            <p className="text-xs text-gray-500">Aucune question configurée pour le moment.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                         <div className="flex items-end">
                             <Button 
