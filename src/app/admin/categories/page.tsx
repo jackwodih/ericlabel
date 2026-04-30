@@ -200,17 +200,18 @@ export default function AdminCategoriesPage() {
                       <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-400">Icône (Nom Lucide)</label>
                         <select 
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
+                            className="w-full bg-slate-900 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-orange-500 outline-none appearance-none"
+                            style={{ colorScheme: 'dark' }}
                             value={newCategory.icon}
                             onChange={e => setNewCategory({...newCategory, icon: e.target.value})}
                         >
-                            <option value="Layers">Couches</option>
-                            <option value="Circle">Cercle</option>
-                            <option value="Square">Carré</option>
-                            <option value="LayoutGrid">Grille</option>
-                            <option value="Shapes">Formes</option>
-                            <option value="Box">Boîte</option>
-                            <option value="Tags">Étiquettes</option>
+                            <option value="Layers" className="bg-slate-900 text-white">Couches</option>
+                            <option value="Circle" className="bg-slate-900 text-white">Cercle</option>
+                            <option value="Square" className="bg-slate-900 text-white">Carré</option>
+                            <option value="LayoutGrid" className="bg-slate-900 text-white">Grille</option>
+                            <option value="Shapes" className="bg-slate-900 text-white">Formes</option>
+                            <option value="Box" className="bg-slate-900 text-white">Boîte</option>
+                            <option value="Tags" className="bg-slate-900 text-white">Étiquettes</option>
                         </select>
                       </div>
                     </div>
@@ -219,27 +220,29 @@ export default function AdminCategoriesPage() {
                       <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-400">Modèle de Tarification</label>
                         <select 
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
+                          className="w-full bg-slate-900 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-orange-500 outline-none appearance-none"
+                          style={{ colorScheme: 'dark' }}
                           value={newCategory.pricingModel}
                           onChange={e => setNewCategory({...newCategory, pricingModel: e.target.value as 'surface' | 'unit' | 'volume'})}
                         >
-                          <option value="surface">Par Surface (cm²) - ex: Étiquettes</option>
-                          <option value="unit">Par Unité (Pièce) - ex: Mugs, Stylos</option>
-                          <option value="volume">Par Volume (cm³) - ex: Boîtes</option>
+                          <option value="surface" className="bg-slate-900 text-white">Par Surface (cm²) - ex: Étiquettes</option>
+                          <option value="unit" className="bg-slate-900 text-white">Par Unité (Pièce) - ex: Mugs, Stylos</option>
+                          <option value="volume" className="bg-slate-900 text-white">Par Volume (cm³) - ex: Boîtes</option>
                         </select>
                       </div>
 
                       <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-400">Type de Prévisualisation</label>
                         <select 
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
+                          className="w-full bg-slate-900 border border-white/10 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-orange-500 outline-none appearance-none"
+                          style={{ colorScheme: 'dark' }}
                           value={newCategory.previewType}
                           onChange={e => setNewCategory({...newCategory, previewType: e.target.value as 'rectangle' | 'circle' | 'square' | 'template'})}
                         >
-                          <option value="rectangle">Rectangle (Étiquette/Ruban)</option>
-                          <option value="circle">Cercle (Bouton)</option>
-                          <option value="square">Carré</option>
-                          <option value="template">Template par défaut</option>
+                          <option value="rectangle" className="bg-slate-900 text-white">Rectangle (Étiquette/Ruban)</option>
+                          <option value="circle" className="bg-slate-900 text-white">Cercle (Bouton)</option>
+                          <option value="square" className="bg-slate-900 text-white">Carré</option>
+                          <option value="template" className="bg-slate-900 text-white">Template par défaut</option>
                         </select>
                       </div>
 

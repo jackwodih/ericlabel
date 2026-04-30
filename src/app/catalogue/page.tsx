@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { materialService, Material } from '@/lib/firebase/materials';
-import { categoryService, Category } from '@/lib/firebase/categories';
+import { categoryService, ProductCategory } from '@/lib/firebase/categories';
 import { Navbar } from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -27,7 +27,7 @@ function CatalogueContent() {
   const categoryParam = searchParams.get('category');
   
   const [materials, setMaterials] = useState<Material[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryParam);
 
