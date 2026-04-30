@@ -5,8 +5,10 @@ import React, { useEffect, useState } from 'react';
 import { MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { settingsService, AppSettings } from '@/lib/firebase/settings';
+import { usePathname } from 'next/navigation';
 
 export function WhatsAppContact() {
+  const pathname = usePathname();
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -18,7 +20,7 @@ export function WhatsAppContact() {
     return () => clearTimeout(timer);
   }, []);
 
-  if (!settings?.whatsapp || !isVisible) return null;
+  if (pathname?.startsWith('/admin') || !settings?.whatsapp || !isVisible) return null;
 
   // Nettoyage du numéro (garde uniquement les chiffres pour l'URL)
   const cleanNumber = settings.whatsapp.replace(/\D/g, '');
