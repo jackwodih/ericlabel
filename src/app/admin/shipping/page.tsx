@@ -17,7 +17,11 @@ import {
   Truck,
   AlertCircle,
   Loader2,
-  Clock
+  Clock,
+  CreditCard,
+  Percent,
+  Globe,
+  Key
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -283,6 +287,113 @@ export default function AdminShippingPage() {
                 <p className="text-[10px] text-orange-300/50 mt-3 italic">
                     Ce délai sera affiché à tous les clients dans leur panier et sur leur devis pour indiquer le temps de fabrication.
                 </p>
+            </Card>
+        </div>
+
+        {/* Configuration des Paiements */}
+        <div className="mb-12">
+            <Card glass className="p-6 border-blue-500/10 bg-blue-500/5">
+                <div className="flex items-center gap-4 mb-8">
+                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                        <CreditCard className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-bold text-blue-400">Configuration des Paiements</h3>
+                        <p className="text-sm text-gray-400">Gérez comment vos clients payent leurs commandes.</p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
+                            <div>
+                                <h4 className="font-bold text-white">Activer l&apos;acompte</h4>
+                                <p className="text-xs text-gray-500">Permettre aux clients de ne payer qu&apos;une partie à la commande.</p>
+                            </div>
+                            <button 
+                                onClick={() => setGlobalSettings({...globalSettings, enableDeposit: !globalSettings.enableDeposit})}
+                                className={`w-12 h-6 rounded-full transition-colors relative ${globalSettings.enableDeposit ? 'bg-orange-500' : 'bg-slate-700'}`}
+                            >
+                                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${globalSettings.enableDeposit ? 'left-7' : 'left-1'}`} />
+                            </button>
+                        </div>
+                    </div>
+
+                    <AnimatePresence>
+                        {globalSettings.enableDeposit && (
+                            <motion.div 
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                className="space-y-2"
+                            >
+                                <label className="text-[10px] font-black text-blue-400 uppercase tracking-widest flex items-center gap-2">
+                                    <Percent className="w-3 h-3" /> Pourcentage d&apos;acompte requis (%)
+                                </label>
+                                <div className="relative">
+                                    <Input 
+                                        type="number"
+                                        placeholder="ex: 50" 
+                                        className="bg-slate-900/50 pr-12"
+                                        value={globalSettings.depositPercentage || ''}
+                                        onChange={e => setGlobalSettings({...globalSettings, depositPercentage: Number(e.target.value)})}
+                                    />
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">%</div>
+                                </div>
+                                <p className="text-[10px] text-gray-500 italic">
+                                    Le client devra payer ce pourcentage pour que sa commande soit confirmée.
+                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                {/* Section Spécifique Money Fusion */}
+                <div className="mt-8 pt-8 border-t border-white/5 space-y-6">
+                    <div className="flex items-center gap-2 text-blue-400">
+                        <Globe className="w-4 h-4" />
+                        <h4 className="font-bold">Money Fusion Settings</h4>
+                    </div>
+                    
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">URL API (Lien de paiement)</label>
+                            <Input 
+                                placeholder="https://www.pay.moneyfusion.net/.../pay/" 
+                                className="bg-slate-900/50"
+                                value={globalSettings.moneyFusionUrl || ''}
+                                onChange={e => setGlobalSettings({...globalSettings, moneyFusionUrl: e.target.value})}
+                            />
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Clé Secrète</label>
+                            <div className="relative">
+                                <Input 
+                                    type="password"
+                                    placeholder="••••••••••••••••" 
+                                    className="bg-slate-900/50 pl-12"
+                                    value={globalSettings.moneyFusionSecret || ''}
+                                    onChange={e => setGlobalSettings({...globalSettings, moneyFusionSecret: e.target.value})}
+                                />
+                                <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-8 flex justify-end">
+                    <Button 
+                        type="button" 
+                        variant="primary"
+                        loading={isSavingSettings}
+                        onClick={() => handleUpdateSettings({ preventDefault: () => {} } as unknown as React.FormEvent)}
+                        className="bg-blue-600 hover:bg-blue-700 shadow-blue-600/20"
+                        icon={<Save />}
+                    >
+                        Enregistrer les réglages de paiement
+                    </Button>
+                </div>
             </Card>
         </div>
 

@@ -18,6 +18,10 @@ export interface AppSettings {
   phone?: string;
   whatsapp?: string;
   logoUrl?: string;
+  enableDeposit?: boolean;
+  depositPercentage?: number;
+  moneyFusionUrl?: string;
+  moneyFusionSecret?: string;
 }
 
 const SETTINGS_DOC_ID = 'identity';

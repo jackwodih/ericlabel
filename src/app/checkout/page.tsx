@@ -11,8 +11,9 @@ import {
   Mail, 
   ArrowRight, 
   CheckCircle2,
-  Loader2,
-  Lock
+  Lock,
+  Wallet,
+  Receipt
 } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Button } from '@/components/ui/Button';
@@ -20,12 +21,16 @@ import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Navbar } from '@/components/layout/Navbar';
 import { db } from '@/lib/firebase/config';
+import { settingsService, AppSettings } from '@/lib/firebase/settings';
+import { moneyFusionService } from '@/lib/payments/moneyfusion';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, total, clearCart } = useCartStore();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [settings, setSettings] = useState<AppSettings | null>(null);
+  const [paymentType, setPaymentType] = useState<'full' | 'deposit'>('full');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -33,8 +38,18 @@ export default function CheckoutPage() {
     address: '',
     city: '',
     country: 'Togo',
-    paymentProvider: 'cinetpay'
+    paymentProvider: 'moneyfusion'
   });
+
+  React.useEffect(() => {
+    settingsService.getSettings().then(setSettings);
+  }, []);
+
+  const depositAmount = settings?.enableDeposit && settings.depositPercentage 
+    ? Math.round((total * settings.depositPercentage) / 100) 
+    : 0;
+  
+  const amountToPay = paymentType === 'deposit' ? depositAmount : total;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -66,6 +81,9 @@ export default function CheckoutPage() {
           customization: item.customization
         })),
         total,
+        amountPaid: amountToPay,
+        paymentType,
+        depositPercentage: settings?.depositPercentage || 100,
         status: 'pending',
         paymentProvider: formData.paymentProvider,
         createdAt: serverTimestamp(),
@@ -79,11 +97,38 @@ export default function CheckoutPage() {
       
       const docRef = await addDoc(collection(db, 'orders'), orderData);
       
-      // Clear cart after success
+      // SI le prestataire est Money Fusion, on lance l'initiation réelle
+      if (formData.paymentProvider === 'moneyfusion') {
+        try {
+          await moneyFusionService.initiatePayment({
+            amount: amountToPay,
+            orderId: docRef.id,
+            customerName: formData.name,
+            customerPhone: formData.phone,
+            customerEmail: formData.email,
+            returnUrl: `${window.location.origin}/checkout/success?orderId=${docRef.id}`,
+            webhookUrl: `${window.location.origin}/api/webhooks/moneyfusion`,
+            items: items.map(item => ({
+              name: item.name,
+              price: item.unitPrice,
+              quantity: item.quantity
+            }))
+          });
+          
+          // Clear cart after redirection starts (optional, usually done on success page)
+          clearCart();
+          return;
+        } catch (paymentError: any) {
+          console.error("Erreur d'initiation Money Fusion:", paymentError);
+          alert("Désolé, le service de paiement est momentanément indisponible : " + paymentError.message);
+          setIsProcessing(false);
+          return;
+        }
+      }
+
+      // Pour les autres modes (PayDunya etc, à implémenter plus tard)
       clearCart();
-      
-      // Redirect to success page (or show success state)
-      alert(`Commande #${docRef.id.slice(0, 8)} enregistrée ! Redirection vers le paiement...`);
+      alert(`Commande #${docRef.id.slice(0, 8)} enregistrée !`);
       router.push('/'); 
 
     } catch (error) {
@@ -210,11 +255,10 @@ export default function CheckoutPage() {
                 <CreditCard className="w-6 h-6 text-orange-500" />
                 Mode de Paiement
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
-                  { id: 'cinetpay', name: 'CinetPay / Mobile Money', desc: 'Orange, MTN, Moov' },
+                  { id: 'moneyfusion', name: 'Money Fusion', desc: 'Mobile Money & Carte Bancaire' },
                   { id: 'paydunya', name: 'PayDunya', desc: 'Sénégal & Mali focus' },
-                  { id: 'stripe', name: 'Carte Bancaire', desc: 'Visa, Mastercard' },
                 ].map((method) => (
                   <label 
                     key={method.id}
@@ -241,6 +285,50 @@ export default function CheckoutPage() {
                 ))}
               </div>
             </section>
+
+            {settings?.enableDeposit && (
+              <section className="space-y-6">
+                <div className="flex items-center gap-3 text-xl font-bold border-b border-white/5 pb-4">
+                  <Wallet className="w-6 h-6 text-blue-500" />
+                  Option de Règlement
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentType('full')}
+                    className={`p-6 rounded-2xl border-2 text-left transition-all ${
+                      paymentType === 'full' 
+                        ? 'border-orange-500 bg-orange-500/5' 
+                        : 'border-white/5 bg-white/5 hover:border-white/10'
+                    }`}
+                  >
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-black uppercase tracking-widest text-[10px] text-gray-500">Option 1</span>
+                      {paymentType === 'full' && <CheckCircle2 className="w-5 h-5 text-orange-500" />}
+                    </div>
+                    <div className="text-lg font-bold mb-1">Paiement Intégral</div>
+                    <div className="text-xs text-gray-400">Régler la totalité ({total.toLocaleString()} FCFA) pour une expédition immédiate.</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setPaymentType('deposit')}
+                    className={`p-6 rounded-2xl border-2 text-left transition-all ${
+                      paymentType === 'deposit' 
+                        ? 'border-blue-500 bg-blue-500/5' 
+                        : 'border-white/5 bg-white/5 hover:border-white/10'
+                    }`}
+                  >
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-black uppercase tracking-widest text-[10px] text-gray-500">Option 2</span>
+                      {paymentType === 'deposit' && <CheckCircle2 className="w-5 h-5 text-blue-500" />}
+                    </div>
+                    <div className="text-lg font-bold mb-1">Paiement d&apos;Acompte</div>
+                    <div className="text-xs text-gray-400">Payer seulement {settings.depositPercentage}% ({depositAmount.toLocaleString()} FCFA) pour confirmer la production.</div>
+                  </button>
+                </div>
+              </section>
+            )}
           </div>
 
           <div className="lg:col-span-4 space-y-6">
@@ -265,16 +353,26 @@ export default function CheckoutPage() {
 
                <div className="space-y-3 pt-4 border-t border-white/10 mb-8">
                  <div className="flex justify-between text-gray-400">
-                    <span>Sous-total</span>
+                    <span>Total de la commande</span>
                     <span>{total.toLocaleString()} FCFA</span>
                  </div>
-                 <div className="flex justify-between text-gray-400">
-                    <span>Frais de port</span>
-                    <span className="text-green-500">Gratuit</span>
-                 </div>
-                 <div className="flex justify-between text-xl font-black pt-2">
-                    <span>Total</span>
-                    <span className="text-orange-500">{total.toLocaleString()} FCFA</span>
+                 
+                 {paymentType === 'deposit' && (
+                   <>
+                     <div className="flex justify-between text-blue-400 font-bold bg-blue-400/5 p-2 rounded">
+                       <span className="flex items-center gap-1"><Receipt className="w-4 h-4" /> Acompte ({settings?.depositPercentage}%)</span>
+                       <span>{depositAmount.toLocaleString()} FCFA</span>
+                     </div>
+                     <div className="flex justify-between text-xs text-gray-500 px-2">
+                       <span>Reste à payer plus tard</span>
+                       <span>{(total - depositAmount).toLocaleString()} FCFA</span>
+                     </div>
+                   </>
+                 )}
+
+                 <div className="flex justify-between text-xl font-black pt-2 border-t border-white/5">
+                    <span>À payer maintenant</span>
+                    <span className="text-orange-500">{amountToPay.toLocaleString()} FCFA</span>
                  </div>
                </div>
 
