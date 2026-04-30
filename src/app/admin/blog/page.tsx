@@ -161,11 +161,11 @@ export default function AdminBlogPage() {
                           <span className="flex items-center gap-1"><User className="w-3 h-3" /> {post.author}</span>
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" /> 
-                            {post.createdAt && (
+                            {post.createdAt ? (
                               typeof post.createdAt === 'string' 
                                 ? new Date(post.createdAt).toLocaleDateString() 
                                 : (post.createdAt as { toDate?: () => {toLocaleDateString: () => string} })?.toDate?.()?.toLocaleDateString() || 'Date inconnue'
-                            )}
+                            ) : 'Date inconnue'}
                           </span>
                         </div>
                       </div>

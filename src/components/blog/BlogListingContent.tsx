@@ -69,11 +69,11 @@ export function BlogListingContent() {
                 <div className="flex items-center gap-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3 h-3" /> 
-                    {post.createdAt && (
+                    {post.createdAt ? (
                       typeof post.createdAt === 'string' 
                         ? new Date(post.createdAt).toLocaleDateString() 
                         : (post.createdAt as { toDate?: () => {toLocaleDateString: () => string} })?.toDate?.()?.toLocaleDateString() || 'Date inconnue'
-                    )}
+                    ) : 'Date inconnue'}
                   </span>
                   <span className="flex items-center gap-1"><User className="w-3 h-3" /> {post.author}</span>
                 </div>

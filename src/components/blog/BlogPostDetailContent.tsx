@@ -53,7 +53,11 @@ export function BlogPostDetailContent({ post }: BlogPostDetailContentProps) {
                 <div className="flex items-center gap-4 text-xs font-bold text-gray-300 uppercase tracking-widest">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3 h-3" /> 
-                    {post.createdAt && (typeof post.createdAt === 'string' ? new Date(post.createdAt).toLocaleDateString() : post.createdAt?.toDate?.()?.toLocaleDateString())}
+                    {post.createdAt ? (
+                      typeof post.createdAt === 'string' 
+                        ? new Date(post.createdAt).toLocaleDateString() 
+                        : (post.createdAt as { toDate?: () => {toLocaleDateString: () => string} })?.toDate?.()?.toLocaleDateString() || 'Date inconnue'
+                    ) : 'Date inconnue'}
                   </span>
                   <span className="flex items-center gap-1 md:flex hidden"><User className="w-3 h-3" /> {post.author}</span>
                 </div>
