@@ -60,7 +60,7 @@ export default async function BlogPostDetailPage({ params }: { params: { slug: s
   return (
     <div className="min-h-screen bg-slate-950 text-white selection:bg-orange-500/30">
       <Navbar />
-      <BlogPostDetailContent post={serializedPost as any} />
+      <BlogPostDetailContent post={serializedPost as unknown as BlogPost} />
     </div>
   );
 }

@@ -17,8 +17,7 @@ import {
   User,
   Tag,
   CheckCircle,
-  Clock,
-  ArrowRight
+  Clock
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';

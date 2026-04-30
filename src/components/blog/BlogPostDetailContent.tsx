@@ -4,7 +4,7 @@
 import React from 'react';
 import { BlogPost } from '@/lib/firebase/blog';
 import { motion } from 'framer-motion';
-import { Calendar, User, ArrowLeft, Clock, Share2, Tag, Eye } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Share2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
@@ -87,7 +87,7 @@ export function BlogPostDetailContent({ post }: BlogPostDetailContentProps) {
                   ))}
                 </div>
                 <Button variant="outline" size="sm" icon={<Share2 className="w-4 h-4" />}>
-                  Partager l'article
+                  Partager l&apos;article
                 </Button>
              </div>
           </div>
@@ -95,7 +95,7 @@ export function BlogPostDetailContent({ post }: BlogPostDetailContentProps) {
           {/* Sidebar latérale */}
           <aside className="lg:col-span-1 space-y-8 md:block hidden">
             <div className="p-6 bg-white/5 border border-white/5 rounded-2xl">
-              <h3 className="font-bold mb-4">À propos de l'auteur</h3>
+              <h3 className="font-bold mb-4">À propos de l&apos;auteur</h3>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center font-black">
                   {post.author.charAt(0)}
@@ -108,7 +108,7 @@ export function BlogPostDetailContent({ post }: BlogPostDetailContentProps) {
             </div>
 
             <div className="p-6 bg-orange-600 rounded-2xl text-white">
-              <h3 className="font-black text-xl mb-4 leading-tight">Besoin d'étiquettes personnalisées ?</h3>
+              <h3 className="font-black text-xl mb-4 leading-tight">Besoin d&apos;étiquettes personnalisées ?</h3>
               <p className="text-sm opacity-90 mb-6 leading-relaxed">
                 Créez vos propres designs en quelques clics avec notre outil en ligne.
               </p>

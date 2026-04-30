@@ -2,7 +2,6 @@
 import { 
   collection, 
   getDocs, 
-  getDoc, 
   doc, 
   addDoc, 
   updateDoc, 
@@ -10,8 +9,7 @@ import {
   query, 
   where, 
   orderBy,
-  serverTimestamp,
-  Timestamp
+  serverTimestamp
 } from 'firebase/firestore';
 import { db } from './config';
 
@@ -29,9 +27,9 @@ export interface BlogPost {
   seoTitle?: string;
   seoDescription?: string;
   seoKeywords?: string;
-  createdAt: any;
-  updatedAt: any;
-  publishedAt?: any;
+  createdAt: unknown;
+  updatedAt: unknown;
+  publishedAt?: unknown;
 }
 
 const COLLECTION_NAME = 'posts';

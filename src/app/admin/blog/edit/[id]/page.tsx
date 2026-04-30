@@ -37,7 +37,7 @@ export default function EditPostPage() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-40 gap-4">
              <Loader2 className="w-12 h-12 text-orange-500 animate-spin" />
-             <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Chargement de l'article...</p>
+             <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Chargement de l&apos;article...</p>
           </div>
         ) : post ? (
           <motion.div
@@ -46,7 +46,7 @@ export default function EditPostPage() {
           >
             <div className="mb-12">
               <h1 className="text-4xl font-black tracking-tight mb-2">
-                Modifier <span className="text-orange-500">l'Article</span>
+                Modifier <span className="text-orange-500">l&apos;Article</span>
               </h1>
               <p className="text-gray-400">Mise à jour de : <span className="text-white italic">{post.title}</span></p>
             </div>

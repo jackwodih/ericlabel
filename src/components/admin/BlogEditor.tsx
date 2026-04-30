@@ -11,7 +11,6 @@ import {
   Save, 
   X, 
   Image as ImageIcon, 
-  Type, 
   AlignLeft, 
   Tag, 
   User,
@@ -38,7 +37,7 @@ interface BlogEditorProps {
 
 export function BlogEditor({ initialData, isEditing = false }: BlogEditorProps) {
   const router = useRouter();
-  const quillRef = useRef<any>(null);
+  const quillRef = useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [loading, setLoading] = useState(false);
   const [post, setPost] = useState<Omit<BlogPost, 'id' | 'createdAt' | 'updatedAt'>>({
     title: initialData?.title || '',
@@ -214,7 +213,7 @@ export function BlogEditor({ initialData, isEditing = false }: BlogEditorProps) 
         <div className="lg:col-span-2 space-y-6">
           <Card glass className="p-8 border-white/5 bg-white/5 space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Titre de l'article</label>
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Titre de l&apos;article</label>
               <input 
                 required
                 className="w-full bg-transparent border-none text-3xl font-black outline-none placeholder:text-gray-800"
@@ -248,7 +247,7 @@ export function BlogEditor({ initialData, isEditing = false }: BlogEditorProps) 
             <div className="space-y-2">
               <div className="flex justify-between items-center mb-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2">
-                  <FileText className="w-3 h-3" /> Contenu de l'article (Visuel)
+                  <FileText className="w-3 h-3" /> Contenu de l&apos;article (Visuel)
                 </label>
                 <button 
                   type="button"

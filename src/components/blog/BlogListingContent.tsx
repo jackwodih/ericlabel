@@ -80,7 +80,7 @@ export function BlogListingContent() {
                 </p>
                 
                 <div className="flex items-center text-orange-500 font-bold text-xs uppercase tracking-widest gap-2 group-hover:gap-4 transition-all">
-                  Lire l'article <ArrowRight className="w-4 h-4" />
+                  Lire l&apos;article <ArrowRight className="w-4 h-4" />
                 </div>
               </div>
             </Card>
