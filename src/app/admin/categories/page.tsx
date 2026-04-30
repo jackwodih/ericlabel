@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
@@ -15,7 +16,8 @@ import {
   Trash,
   Loader2,
   AlertCircle,
-  Shapes
+  Shapes,
+  ArrowRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -309,6 +311,14 @@ export default function AdminCategoriesPage() {
                             <div className="flex justify-between text-xs">
                                 <span className="text-gray-500">Visuel:</span>
                                 <span className="text-white uppercase font-bold">{c.previewType}</span>
+                            </div>
+                            <div className="pt-4">
+                                <Link 
+                                  href={`/catalogue?category=${c.id}`}
+                                  className="text-[10px] font-black text-orange-500 hover:text-orange-400 flex items-center gap-1 uppercase tracking-widest transition-colors"
+                                >
+                                  Voir sur le site <ArrowRight className="w-3 h-3" />
+                                </Link>
                             </div>
                         </div>
                       </div>

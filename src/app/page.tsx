@@ -75,9 +75,11 @@ export default function HomePage() {
                 Commencer la création
               </button>
             </Link>
-            <button className="px-8 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white rounded-lg font-semibold hover:bg-white/20 transition">
-              Voir le catalogue
-            </button>
+            <Link href="/catalogue">
+              <button className="px-8 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white rounded-lg font-semibold hover:bg-white/20 transition w-full sm:w-auto">
+                Voir le catalogue
+              </button>
+            </Link>
           </div>
 
           <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8">
