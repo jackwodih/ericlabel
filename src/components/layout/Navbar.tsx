@@ -5,15 +5,19 @@ import Link from 'next/link';
 import { ShoppingCart, Menu, X, Sparkles, User, Box, Settings2, BookOpen } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { motion, AnimatePresence } from 'framer-motion';
+import { settingsService, AppSettings } from '@/lib/firebase/settings';
 
 export function Navbar() {
   const { itemCount } = useCartStore();
   const [mounted, setMounted] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [settings, setSettings] = useState<AppSettings | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    settingsService.getSettings().then(setSettings);
+    
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
@@ -40,10 +44,20 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-rose-600 flex items-center justify-center shadow-lg group-hover:shadow-orange-500/50 transition-all group-hover:scale-110">
-            <span className="text-white font-black text-xl">L</span>
-          </div>
-          <span className="text-white font-black text-xl tracking-tight hidden lg:block">
+          {settings?.logoUrl ? (
+            <div className="w-10 h-10 rounded-xl overflow-hidden bg-white/5 border border-white/10 group-hover:border-orange-500/50 transition-all group-hover:scale-110">
+              <img 
+                src={settings.logoUrl} 
+                alt="Logo Label Eric" 
+                className="w-full h-full object-contain p-1"
+              />
+            </div>
+          ) : (
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-rose-600 flex items-center justify-center shadow-lg group-hover:shadow-orange-500/50 transition-all group-hover:scale-110">
+              <span className="text-white font-black text-xl">L</span>
+            </div>
+          )}
+          <span className="text-white font-black text-xl tracking-tight hidden lg:block group-hover:text-orange-500 transition-colors">
             LABEL<span className="text-orange-500">ERIC</span>
           </span>
         </Link>
