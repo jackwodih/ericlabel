@@ -7,8 +7,6 @@ import { settingsService, AppSettings } from '@/lib/firebase/settings';
 import { 
   Facebook, 
   Youtube, 
-  Instagram, 
-  Twitter, 
   Mail, 
   MapPin, 
   Phone,
@@ -152,7 +150,7 @@ export function Footer() {
             © {new Date().getFullYear()} Label Eric. Tous droits réservés.
           </p>
           <div className="flex items-center gap-6">
-             <span className="text-[10px] font-bold text-gray-700 uppercase tracking-widest italic tracking-[0.2em]">L'excellence de l'étiquetage premium</span>
+             <span className="text-[10px] font-bold text-gray-700 uppercase tracking-widest italic tracking-[0.2em]">L&apos;excellence de l&apos;étiquetage premium</span>
           </div>
         </div>
       </div>
