@@ -28,6 +28,8 @@ const PinterestIcon = () => (
   </svg>
 );
 
+import Image from 'next/image';
+
 export function Footer() {
   const [settings, setSettings] = useState<AppSettings | null>(null);
 
@@ -51,10 +53,13 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-3 group">
               {settings?.logoUrl ? (
                 <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 border border-white/10 group-hover:border-orange-500/50 transition-colors">
-                  <img 
+                  <Image 
                     src={settings.logoUrl} 
                     alt="Logo Label Eric" 
+                    width={48}
+                    height={48}
                     className="object-contain w-full h-full p-1"
+                    unoptimized
                   />
                 </div>
               ) : (

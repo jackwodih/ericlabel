@@ -7,6 +7,8 @@ import { useCartStore } from '@/store/cartStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { settingsService, AppSettings } from '@/lib/firebase/settings';
 
+import Image from 'next/image';
+
 export function Navbar() {
   const { itemCount } = useCartStore();
   const [mounted, setMounted] = useState(false);
@@ -46,10 +48,13 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-3 group shrink-0">
           {settings?.logoUrl ? (
             <div className="w-10 h-10 rounded-xl overflow-hidden bg-white/5 border border-white/10 group-hover:border-orange-500/50 transition-all group-hover:scale-110">
-              <img 
+              <Image 
                 src={settings.logoUrl} 
                 alt="Logo Label Eric" 
+                width={40}
+                height={40}
                 className="w-full h-full object-contain p-1"
+                unoptimized // Pour éviter les problèmes avec les URLs Firebase Storage parfois dynamiques
               />
             </div>
           ) : (
